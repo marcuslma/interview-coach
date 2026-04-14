@@ -95,7 +95,14 @@ export async function POST(req: Request) {
       rubric: turn.rubric,
     });
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "Server error";
+    let msg = e instanceof Error ? e.message : "Server error";
+    if (
+      msg.includes("Invalid interview turn JSON") ||
+      msg.includes("non-JSON output")
+    ) {
+      msg =
+        "The interviewer response could not be processed. Please try sending your message again.";
+    }
     const status =
       msg.includes("OPENAI_API_KEY") || msg.includes("API key") ? 503 : 500;
     return NextResponse.json({ error: msg }, { status });

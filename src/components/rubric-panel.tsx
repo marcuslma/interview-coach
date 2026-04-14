@@ -40,7 +40,7 @@ export function RubricPanel({ rubric }: Props) {
       </ul>
       <div className="mt-4">
         <p className="text-xs font-semibold uppercase tracking-wide text-zinc-600 dark:text-zinc-400">
-          Study next
+          Topics to review before your interview
         </p>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-zinc-800 dark:text-zinc-200">
           {rubric.study_next.map((s) => (

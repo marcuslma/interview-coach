@@ -39,7 +39,7 @@ export function buildSessionMarkdown(input: {
     }
 
     lines.push("");
-    lines.push("### Study next");
+    lines.push("### Topics to review before your interview");
     lines.push("");
 
     for (const s of input.rubric.study_next) {

@@ -202,7 +202,7 @@ export function SessionWorkspace({ sessionId }: { sessionId: string }) {
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="flex flex-wrap items-start justify-between gap-4">
+      <header className="sticky top-0 z-10 flex flex-wrap items-start justify-between gap-4 border-b border-zinc-200/80 bg-zinc-50/95 pb-4 backdrop-blur-sm dark:border-zinc-800/80 dark:bg-zinc-950/95">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
             {trackLabel}

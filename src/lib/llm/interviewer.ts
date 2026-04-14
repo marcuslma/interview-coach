@@ -5,10 +5,12 @@ import {
   type PracticeCategory,
   type PracticePrompt,
 } from "@/lib/prompts/types";
-import { type InterviewTurn, interviewTurnSchema } from "./schema";
+import { type InterviewTurn } from "./schema";
+import { parseInterviewTurnJson } from "./parse-turn";
 
 const SYSTEM_PROMPT_DESIGN = `You are a senior staff engineer conducting a **system design interview**.
 Your job is to simulate a realistic interview loop: ask clarifying questions, probe trade-offs, and occasionally challenge assumptions—without lecturing like a textbook.
+Prioritize **questions and trade-off probes** over long architecture essays until the candidate drives depth; keep answers you give short and interview-realistic.
 
 Rules:
 - Respond ONLY with a single JSON object (no markdown fences, no prose outside JSON). The JSON must match this shape:
@@ -29,11 +31,11 @@ Rules:
 - When requirements are still ambiguous, stay in clarification.
 - When you have enough signal to score, move to wrap_up, then set phase "complete", session_complete true, and provide a full rubric.
 - If the candidate asks to end early, move to wrap_up then complete with rubric based on what you have.
-- Rubric dimensions should cover: requirements & scope, capacity & estimation, data model & storage, reliability & ops, trade-offs & consistency (merge/split as needed).
+- Rubric dimensions should cover: requirements & scope, capacity & estimation, data model & storage, reliability & ops, trade-offs & consistency (merge/split as needed). Include **communication & clarity** as at least one dimension name when scoring.
 - If uncertain about facts, state assumptions explicitly in message_markdown (do not invent product details not implied by the prompt).
 - Keep tone professional, direct, and interview-realistic.`;
 
-const CODE_PEDAGOGY = `**Pedagogy first:** Do not rush new exercises. After each answer: briefly explain **why** (define terms when needed), ask the candidate to justify **why** before a harder question or new snippet—unless they already explained the mechanism fully. Wrong answers: correct the mental model, then follow up.`;
+const CODE_PEDAGOGY = `**Interview simulation:** You are conducting a technical interview, not teaching a course. Keep explanations brief and only when needed to evaluate understanding. After each candidate message, prefer probing questions (why, trade-offs, edge cases) over lecturing. If the answer is wrong, correct the mental model in 2–4 sentences, then ask one targeted follow-up. Do not reveal evaluator notes.`;
 
 const CODE_JSON_RULES = `Rules:
 - Respond ONLY with a single JSON object (no markdown fences, no prose outside JSON):
@@ -46,6 +48,8 @@ const CODE_JSON_RULES = `Rules:
 - Phases: warmup → (ordering / semantics / complexity as fits) → wrap_up → complete.
 - "message_markdown": GitHub-flavored Markdown; use fenced code with the session's primary language tag when you pose code.
 - When you have enough signal, wrap_up then complete with rubric. Rubric: assess reasoning and explanation, not only final answers.
+- Rubric "dimensions" must reflect **interview signals**, e.g. reasoning/explanation, mental model correctness, edge cases & trade-offs (merge/split/rename as fits the scenario). At least three dimensions.
+- "study_next": 3–6 **short bullet topics** the candidate could skim before a real interview—not a multi-week study plan.
 - Do not paste hidden evaluator notes verbatim.`;
 
 const SYSTEM_PROMPT_JAVASCRIPT = `You are an expert interviewer for **JavaScript** (the language: ECMAScript semantics in browsers/Node). Use **JavaScript only** in code fences—no TypeScript syntax unless the candidate asks.
@@ -185,31 +189,31 @@ export async function runInterviewTurn(
     });
   }
 
-  const completion = await openai.chat.completions.create({
-    model,
-    temperature: 0.35,
-    response_format: { type: "json_object" },
-    messages,
-  });
+  const maxAttempts = 3;
+  let lastError: Error | null = null;
 
-  const raw = completion.choices[0]?.message?.content;
-  if (!raw) {
-    throw new Error("Empty completion from model");
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const completion = await openai.chat.completions.create({
+        model,
+        temperature: 0.35,
+        response_format: { type: "json_object" },
+        messages,
+      });
+
+      const raw = completion.choices[0]?.message?.content;
+      if (!raw) {
+        throw new Error("Empty completion from model");
+      }
+
+      return parseInterviewTurnJson(raw);
+    } catch (e) {
+      lastError = e instanceof Error ? e : new Error(String(e));
+      if (attempt === maxAttempts) {
+        break;
+      }
+    }
   }
 
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(raw);
-  } catch {
-    throw new Error("Model returned non-JSON output");
-  }
-
-  const result = interviewTurnSchema.safeParse(parsed);
-  if (!result.success) {
-    throw new Error(
-      `Invalid interview turn JSON: ${result.error.message}\nRaw: ${raw.slice(0, 2000)}`,
-    );
-  }
-
-  return result.data;
+  throw lastError ?? new Error("Interview turn failed");
 }
