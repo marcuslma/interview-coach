@@ -47,3 +47,7 @@ next-env.d.ts
 /data/*.db-wal
 
 CONTRIBUTING.md
+
+# Local design/spec artifacts (superpowers specs/plans; do not commit)
+/docs/superpowers/
+/docs/specs/
