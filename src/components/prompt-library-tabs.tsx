@@ -3,7 +3,12 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { type KeyboardEvent, useCallback, useMemo } from "react";
 import { StartSessionButton } from "@/components/start-session-button";
-import { categoryFromTrackParam, type PracticePrompt, trackSlugFromCategory } from "@/lib/prompts/types";
+import {
+  categoryFromTrackParam,
+  DEFAULT_TRACK_SLUG,
+  type PracticePrompt,
+  trackSlugFromCategory,
+} from "@/lib/prompts/types";
 
 export type PromptTrackConfig = {
   slug: string;
@@ -82,7 +87,7 @@ export function PromptLibraryTabs({ tracks }: { tracks: PromptTrackConfig[] }) {
   const setSlug = useCallback(
     (slug: string) => {
       const params = new URLSearchParams(searchParams.toString());
-      if (slug === "javascript") {
+      if (slug === DEFAULT_TRACK_SLUG) {
         params.delete("track");
       } else {
         params.set("track", slug);

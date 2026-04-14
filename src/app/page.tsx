@@ -12,14 +12,6 @@ export const dynamic = "force-dynamic";
 export default async function HomePage() {
   const tracks: PromptTrackConfig[] = [
     {
-      slug: "javascript",
-      label: "JavaScript",
-      description:
-        "Language fundamentals: execution order, semantics, closures, Big-O — JavaScript only.",
-      prompts: listPromptsByCategory("javascript"),
-      accent: "js",
-    },
-    {
       slug: "system_design",
       label: "System design",
       description:
@@ -28,11 +20,12 @@ export default async function HomePage() {
       accent: "design",
     },
     {
-      slug: "nodejs",
-      label: "Node.js",
-      description: "Runtime, streams, modules, process, scaling patterns.",
-      prompts: listPromptsByCategory("nodejs"),
-      accent: "node",
+      slug: "javascript",
+      label: "JavaScript",
+      description:
+        "Language fundamentals: execution order, semantics, closures, Big-O — JavaScript only.",
+      prompts: listPromptsByCategory("javascript"),
+      accent: "js",
     },
     {
       slug: "typescript",
@@ -40,6 +33,13 @@ export default async function HomePage() {
       description: "Types, narrowing, generics, utility types, modules.",
       prompts: listPromptsByCategory("typescript"),
       accent: "ts",
+    },
+    {
+      slug: "nodejs",
+      label: "Node.js",
+      description: "Runtime, streams, modules, process, scaling patterns.",
+      prompts: listPromptsByCategory("nodejs"),
+      accent: "node",
     },
     {
       slug: "nestjs",
@@ -88,24 +88,20 @@ export default async function HomePage() {
           Interview Coach
         </h1>
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
-          Chat-only practice with an AI interviewer: JavaScript (default), system design, Node.js, TypeScript, NestJS, and Next.js.
+          Chat-only practice with an AI interviewer: system design (default tab), JavaScript, TypeScript, Node.js, NestJS, and Next.js.
           Set{" "}
           <code className="rounded bg-zinc-200 px-1 font-mono text-xs dark:bg-zinc-800">
             OPENAI_API_KEY
           </code>{" "}
           locally. Deep links:{" "}
           <code className="rounded bg-zinc-200 px-1 font-mono text-xs dark:bg-zinc-800">
-            ?track=system_design
+            ?track=javascript
           </code>
           ,{" "}
           <code className="rounded bg-zinc-200 px-1 font-mono text-xs dark:bg-zinc-800">
             ?track=nextjs
           </code>
-          , etc. Default tab opens with no query or{" "}
-          <code className="rounded bg-zinc-200 px-1 font-mono text-xs dark:bg-zinc-800">
-            ?track=javascript
-          </code>
-          .
+          , etc. With no query string, the first tab (system design) is selected.
         </p>
       </div>
 

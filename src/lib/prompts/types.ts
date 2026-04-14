@@ -6,33 +6,36 @@ export type PracticeCategory =
   | "nestjs"
   | "nextjs";
 
-/** URL query ?track=… slugs (default: javascript) */
+/** Default tab when `?track=` is omitted (clean URL). */
+export const DEFAULT_TRACK_SLUG = "system_design";
+
+/** URL query ?track=… slugs (default tab: system_design) */
 export const TRACK_SLUGS: {
   slug: string;
   category: PracticeCategory;
 }[] = [
-  { slug: "javascript", category: "javascript" },
   { slug: "system_design", category: "system_design" },
-  { slug: "nodejs", category: "nodejs" },
+  { slug: "javascript", category: "javascript" },
   { slug: "typescript", category: "typescript" },
+  { slug: "nodejs", category: "nodejs" },
   { slug: "nestjs", category: "nestjs" },
   { slug: "nextjs", category: "nextjs" },
 ];
 
 export function categoryFromTrackParam(param: string | null): PracticeCategory {
-  if (!param || param === "javascript") {
-    return "javascript";
+  if (!param) {
+    return "system_design";
   }
 
   const found = TRACK_SLUGS.find((t) => t.slug === param);
-  return found?.category ?? "javascript";
+  return found?.category ?? "system_design";
 }
 
 export function trackSlugFromCategory(
   category: PracticeCategory,
 ): string {
   const found = TRACK_SLUGS.find((t) => t.category === category);
-  return found?.slug ?? "javascript";
+  return found?.slug ?? DEFAULT_TRACK_SLUG;
 }
 
 export type PracticePrompt = {

@@ -43,23 +43,23 @@ On the home page, each tab is a **track** with ready-made scenarios (prompts liv
 
 | Track                | Focus                                                                                                               |
 | :------------------- | :------------------------------------------------------------------------------------------------------------------ |
-| ⚡ **JavaScript**    | Language fundamentals: execution order, semantics, closures, Big-O, optimizations _(default when you open the app)_ |
-| 🏗️ **System design** | Architecture, trade-offs, capacity, APIs, data, reliability                                                         |
-| 🌱 **Node.js**       | Runtime, streams, modules, process, scaling patterns                                                                |
+| 🏗️ **System design** | Architecture, trade-offs, capacity, APIs, data, reliability _(default tab when you open the app)_                    |
+| ⚡ **JavaScript**    | Language fundamentals: execution order, semantics, closures, Big-O, optimizations                                 |
 | 🛡️ **TypeScript**    | Types, narrowing, generics, utility types                                                                           |
+| 🌱 **Node.js**       | Runtime, streams, modules, process, scaling patterns                                                                |
 | 🐱 **NestJS**        | DI, modules, guards, pipes, interceptors                                                                            |
 | 🚀 **Next.js**       | App Router, RSC, caching, route handlers, metadata                                                                  |
 
-**Quick URLs:** the **JavaScript** tab is selected by default. To deep-link another track, use a query string:
+**Quick URLs:** with no query string, the **System design** tab is selected. To open another track:
 
-`?track=javascript` · `?track=system_design` · `?track=nodejs` · `?track=typescript` · `?track=nestjs` · `?track=nextjs`
+`?track=javascript` · `?track=typescript` · `?track=nodejs` · `?track=nestjs` · `?track=nextjs` · `?track=system_design`
 
 ---
 
 ## 🧱 How it works under the hood
 
 - 📂 **Interview scenarios** live in `src/lib/prompts/*-seed.ts` (e.g. `system-design-seed.ts` exports sets like `SYSTEM_DESIGN_PROMPTS`). They are **not** loaded from the database — they ship with the codebase for versioning and predictability.
-- 🗄️ **SQLite** (via **Drizzle ORM**) stores **sessions** and **messages**: your history and the model’s replies.
+- 🗄️ **SQLite** (via **Drizzle ORM**) stores **sessions** and **messages**: your history and the model’s replies. On first run the app **creates these tables** if they are missing; you can still use `npm run db:push` to sync the schema explicitly after schema changes.
 - 🔒 **OpenAI** runs **server-side only** — the API key never reaches the browser.
 
 **Stack:** **Next.js 16**, **React 19**, **Tailwind CSS 4**, **Drizzle** + **better-sqlite3**, **OpenAI** SDK, **Zod** for validation, **react-markdown** + **remark-gfm** for rich rendering in chat and export.
