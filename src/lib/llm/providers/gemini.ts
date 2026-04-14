@@ -1,23 +1,17 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import type { Content } from "@google/generative-ai";
+import { getEnvApiKeyForProvider } from "./env-keys";
 import type {
   CompleteJsonInterviewParams,
   InterviewLlmProvider,
 } from "./types";
 
-function getApiKey(): string {
-  const key = process.env.GOOGLE_API_KEY;
-  if (!key) {
-    throw new Error("GOOGLE_API_KEY is not set");
-  }
-  return key;
-}
-
 export function createGeminiProvider(): InterviewLlmProvider {
   return {
     id: "google",
     async completeJsonInterview(params: CompleteJsonInterviewParams) {
-      const genAI = new GoogleGenerativeAI(getApiKey());
+      const apiKey = params.apiKey?.trim() || getEnvApiKeyForProvider("google");
+      const genAI = new GoogleGenerativeAI(apiKey);
       const systemParts: string[] = [];
       const contents: Content[] = [];
       for (const m of params.messages) {

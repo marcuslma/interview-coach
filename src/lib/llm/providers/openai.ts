@@ -1,22 +1,16 @@
 import OpenAI from "openai";
+import { getEnvApiKeyForProvider } from "./env-keys";
 import type {
   CompleteJsonInterviewParams,
   InterviewLlmProvider,
 } from "./types";
 
-function getApiKey(): string {
-  const key = process.env.OPENAI_API_KEY;
-  if (!key) {
-    throw new Error("OPENAI_API_KEY is not set");
-  }
-  return key;
-}
-
 export function createOpenAiProvider(): InterviewLlmProvider {
   return {
     id: "openai",
     async completeJsonInterview(params: CompleteJsonInterviewParams) {
-      const openai = new OpenAI({ apiKey: getApiKey() });
+      const apiKey = params.apiKey?.trim() || getEnvApiKeyForProvider("openai");
+      const openai = new OpenAI({ apiKey });
       const completion = await openai.chat.completions.create({
         model: params.model,
         temperature: params.temperature,

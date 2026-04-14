@@ -9,6 +9,8 @@ export type CompleteJsonInterviewParams = {
   model: string;
   temperature: number;
   messages: InterviewChatMessage[];
+  /** When set, used instead of the matching environment variable. */
+  apiKey?: string;
 };
 
 export type InterviewLlmProvider = {

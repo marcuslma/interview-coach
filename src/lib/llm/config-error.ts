@@ -18,5 +18,12 @@ export function isLlmConfigurationErrorMessage(message: string): boolean {
   ) {
     return true;
   }
+  if (
+    message.includes("SETTINGS_ENCRYPTION_KEY") ||
+    message.includes("decrypt") ||
+    message.includes("Stored API key")
+  ) {
+    return true;
+  }
   return false;
 }

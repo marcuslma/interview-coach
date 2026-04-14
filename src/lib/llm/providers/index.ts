@@ -10,6 +10,8 @@ export type {
   LlmProviderId,
 } from "./types";
 
+export { getEnvApiKeyForProvider } from "./env-keys";
+
 export function getLlmProviderId(): LlmProviderId {
   const raw = (process.env.LLM_PROVIDER ?? "openai").toLowerCase().trim();
   if (raw === "anthropic" || raw === "google" || raw === "openai") {
@@ -33,8 +35,7 @@ export function getInterviewModelForProvider(id: LlmProviderId): string {
   }
 }
 
-export function getLlmProvider(): InterviewLlmProvider {
-  const id = getLlmProviderId();
+export function getLlmProviderById(id: LlmProviderId): InterviewLlmProvider {
   switch (id) {
     case "openai":
       return createOpenAiProvider();
@@ -47,4 +48,8 @@ export function getLlmProvider(): InterviewLlmProvider {
       return _x;
     }
   }
+}
+
+export function getLlmProvider(): InterviewLlmProvider {
+  return getLlmProviderById(getLlmProviderId());
 }

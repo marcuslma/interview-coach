@@ -46,6 +46,15 @@ function ensureSqliteTables(sqlite: Database.Database) {
       created_at integer NOT NULL
     );
   `);
+  sqlite.exec(`
+    CREATE TABLE IF NOT EXISTS app_settings (
+      id text PRIMARY KEY NOT NULL,
+      llm_provider text NOT NULL,
+      model text NOT NULL,
+      api_key_encrypted text,
+      updated_at integer NOT NULL
+    );
+  `);
 }
 
 function getDb() {

@@ -4,12 +4,8 @@ import {
   type PracticePrompt,
 } from "@/lib/prompts/types";
 import { buildLanguageInstruction } from "@/lib/locale";
-import {
-  getInterviewModelForProvider,
-  getLlmProvider,
-  getLlmProviderId,
-  type InterviewChatMessage,
-} from "./providers";
+import { resolveInterviewLlmConfig } from "@/lib/settings/interview-llm-config";
+import { getLlmProviderById, type InterviewChatMessage } from "./providers";
 import { type InterviewTurn } from "./schema";
 import { parseInterviewTurnJson } from "./parse-turn";
 
@@ -146,8 +142,10 @@ function systemPromptForCategory(category: PracticeCategory): string {
   }
 }
 
-export function getInterviewModel(): string {
-  return getInterviewModelForProvider(getLlmProviderId());
+/** Resolved model (database overrides env when configured). */
+export async function getInterviewModel(): Promise<string> {
+  const config = await resolveInterviewLlmConfig();
+  return config.model;
 }
 
 export type HistoryMsg = { role: "user" | "assistant"; content: string };
@@ -178,8 +176,8 @@ export async function runInterviewTurn(
   history: HistoryMsg[],
   options?: { bootstrap?: boolean; localeHint?: string },
 ): Promise<InterviewTurn> {
-  const provider = getLlmProvider();
-  const model = getInterviewModelForProvider(provider.id);
+  const { providerId, model, apiKey } = await resolveInterviewLlmConfig();
+  const provider = getLlmProviderById(providerId);
 
   const isDesign = prompt.category === "system_design";
   const systemPrompt = systemPromptForCategory(prompt.category);
@@ -218,6 +216,7 @@ export async function runInterviewTurn(
         model,
         temperature: 0.35,
         messages,
+        apiKey,
       });
 
       return parseInterviewTurnJson(raw);

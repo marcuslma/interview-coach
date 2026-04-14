@@ -106,6 +106,9 @@ Open [http://localhost:3000](http://localhost:3000) and pick any track you like.
 | `GOOGLE_API_KEY`    | With Gemini | Server-only |
 | `GOOGLE_MODEL`      |    No    | Default: `gemini-2.0-flash` |
 | `DATABASE_PATH`     |    No    | SQLite path; default: `./data/interview-coach.db` |
+| `SETTINGS_ENCRYPTION_KEY` | No | Passphrase used to encrypt API keys saved in the database from the **Settings** page. If unset, you can still override provider/model in Settings, but storing a key in SQLite returns HTTP 501 until this is set. |
+
+**Settings UI:** open **`/settings`** in the running app to choose provider and model and optionally persist an API key (encrypted) in the local SQLite file. Values saved there override `LLM_PROVIDER` / model env vars for this instance.
 
 ---
 
