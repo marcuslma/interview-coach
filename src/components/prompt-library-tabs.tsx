@@ -46,27 +46,42 @@ function cardAccentClass(accent: PromptTrackConfig["accent"]): string {
   }
 }
 
-/** Highlight panel for the active track description */
+/** Highlight panel: luminous gradient + tinted shadow + ring per track */
 function trackSpotlightClass(accent: PromptTrackConfig["accent"]): string {
+  const glow = {
+    js: "shadow-[0_14px_44px_-12px_rgba(234,179,8,0.45)] dark:shadow-[0_14px_48px_-10px_rgba(234,179,8,0.22)]",
+    design:
+      "shadow-[0_14px_44px_-12px_rgba(168,85,247,0.4)] dark:shadow-[0_14px_48px_-10px_rgba(168,85,247,0.2)]",
+    node: "shadow-[0_14px_44px_-12px_rgba(16,185,129,0.42)] dark:shadow-[0_14px_48px_-10px_rgba(16,185,129,0.2)]",
+    ts: "shadow-[0_14px_44px_-12px_rgba(59,130,246,0.42)] dark:shadow-[0_14px_48px_-10px_rgba(59,130,246,0.2)]",
+    nest: "shadow-[0_14px_44px_-12px_rgba(239,68,68,0.38)] dark:shadow-[0_14px_48px_-10px_rgba(239,68,68,0.18)]",
+    next: "shadow-[0_14px_44px_-12px_rgba(113,113,122,0.35)] dark:shadow-[0_14px_48px_-10px_rgba(0,0,0,0.5)]",
+    arch: "shadow-[0_14px_44px_-12px_rgba(245,158,11,0.4)] dark:shadow-[0_14px_48px_-10px_rgba(245,158,11,0.2)]",
+    patterns:
+      "shadow-[0_14px_44px_-12px_rgba(6,182,212,0.42)] dark:shadow-[0_14px_48px_-10px_rgba(6,182,212,0.2)]",
+    default:
+      "shadow-[0_12px_40px_-12px_rgba(15,23,42,0.12)] dark:shadow-[0_12px_40px_-8px_rgba(0,0,0,0.45)]",
+  } as const;
+
   switch (accent) {
     case "js":
-      return "border-yellow-400/70 bg-gradient-to-br from-yellow-50/95 to-amber-50/40 ring-1 ring-yellow-200/60 dark:border-yellow-700/50 dark:from-yellow-950/40 dark:to-zinc-950/80 dark:ring-yellow-900/40";
+      return `overflow-hidden border-2 border-yellow-400/75 bg-gradient-to-br from-yellow-50 via-amber-50/90 to-orange-50/50 ring-2 ring-yellow-200/70 ring-offset-2 ring-offset-white/90 ${glow.js} dark:border-yellow-600/60 dark:from-yellow-950/55 dark:via-amber-950/35 dark:to-zinc-950 dark:ring-yellow-800/50 dark:ring-offset-zinc-950`;
     case "design":
-      return "border-purple-400/60 bg-gradient-to-br from-purple-50/95 to-violet-50/40 ring-1 ring-purple-200/60 dark:border-purple-700/50 dark:from-purple-950/35 dark:to-zinc-950/80 dark:ring-purple-900/40";
+      return `overflow-hidden border-2 border-purple-400/70 bg-gradient-to-br from-purple-50 via-violet-50/85 to-fuchsia-50/45 ring-2 ring-purple-200/65 ring-offset-2 ring-offset-white/90 ${glow.design} dark:border-purple-600/55 dark:from-purple-950/50 dark:via-violet-950/35 dark:to-zinc-950 dark:ring-purple-800/45 dark:ring-offset-zinc-950`;
     case "node":
-      return "border-emerald-400/60 bg-gradient-to-br from-emerald-50/95 to-green-50/30 ring-1 ring-emerald-200/50 dark:border-emerald-700/50 dark:from-emerald-950/35 dark:to-zinc-950/80 dark:ring-emerald-900/35";
+      return `overflow-hidden border-2 border-emerald-400/70 bg-gradient-to-br from-emerald-50 via-green-50/80 to-teal-50/40 ring-2 ring-emerald-200/60 ring-offset-2 ring-offset-white/90 ${glow.node} dark:border-emerald-600/55 dark:from-emerald-950/45 dark:via-green-950/30 dark:to-zinc-950 dark:ring-emerald-800/40 dark:ring-offset-zinc-950`;
     case "ts":
-      return "border-blue-400/60 bg-gradient-to-br from-blue-50/95 to-sky-50/35 ring-1 ring-blue-200/60 dark:border-blue-700/50 dark:from-blue-950/35 dark:to-zinc-950/80 dark:ring-blue-900/40";
+      return `overflow-hidden border-2 border-blue-400/70 bg-gradient-to-br from-blue-50 via-sky-50/85 to-indigo-50/40 ring-2 ring-blue-200/65 ring-offset-2 ring-offset-white/90 ${glow.ts} dark:border-blue-600/55 dark:from-blue-950/50 dark:via-sky-950/35 dark:to-zinc-950 dark:ring-blue-800/45 dark:ring-offset-zinc-950`;
     case "nest":
-      return "border-red-400/55 bg-gradient-to-br from-red-50/90 to-orange-50/25 ring-1 ring-red-200/50 dark:border-red-800/50 dark:from-red-950/30 dark:to-zinc-950/80 dark:ring-red-900/35";
+      return `overflow-hidden border-2 border-red-400/65 bg-gradient-to-br from-red-50 via-orange-50/75 to-amber-50/35 ring-2 ring-red-200/55 ring-offset-2 ring-offset-white/90 ${glow.nest} dark:border-red-700/55 dark:from-red-950/45 dark:via-orange-950/28 dark:to-zinc-950 dark:ring-red-900/40 dark:ring-offset-zinc-950`;
     case "next":
-      return "border-zinc-400/50 bg-gradient-to-br from-zinc-100/95 to-zinc-50/50 ring-1 ring-zinc-300/70 dark:border-zinc-600 dark:from-zinc-900/80 dark:to-zinc-950 dark:ring-zinc-700/60";
+      return `overflow-hidden border-2 border-zinc-300/90 bg-gradient-to-br from-white via-zinc-50/95 to-zinc-100/70 ring-2 ring-zinc-200/80 ring-offset-2 ring-offset-white/90 ${glow.next} dark:border-zinc-600 dark:from-zinc-900/90 dark:via-zinc-950 dark:to-black dark:ring-zinc-700/70 dark:ring-offset-zinc-950`;
     case "arch":
-      return "border-amber-400/60 bg-gradient-to-br from-amber-50/95 to-orange-50/30 ring-1 ring-amber-200/55 dark:border-amber-700/50 dark:from-amber-950/35 dark:to-zinc-950/80 dark:ring-amber-900/35";
+      return `overflow-hidden border-2 border-amber-400/70 bg-gradient-to-br from-amber-50 via-orange-50/80 to-yellow-50/45 ring-2 ring-amber-200/60 ring-offset-2 ring-offset-white/90 ${glow.arch} dark:border-amber-600/55 dark:from-amber-950/48 dark:via-orange-950/32 dark:to-zinc-950 dark:ring-amber-800/42 dark:ring-offset-zinc-950`;
     case "patterns":
-      return "border-cyan-400/60 bg-gradient-to-br from-cyan-50/95 to-teal-50/25 ring-1 ring-cyan-200/55 dark:border-cyan-700/50 dark:from-cyan-950/30 dark:to-zinc-950/80 dark:ring-cyan-900/35";
+      return `overflow-hidden border-2 border-cyan-400/70 bg-gradient-to-br from-cyan-50 via-teal-50/75 to-sky-50/40 ring-2 ring-cyan-200/58 ring-offset-2 ring-offset-white/90 ${glow.patterns} dark:border-cyan-600/55 dark:from-cyan-950/45 dark:via-teal-950/30 dark:to-zinc-950 dark:ring-cyan-800/42 dark:ring-offset-zinc-950`;
     default:
-      return "border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900/50";
+      return `overflow-hidden border-2 border-zinc-200 bg-gradient-to-br from-zinc-50 to-white ${glow.default} ring-2 ring-zinc-200/80 ring-offset-2 ring-offset-white dark:border-zinc-700 dark:from-zinc-900 dark:to-zinc-950 dark:ring-zinc-700/60 dark:ring-offset-zinc-950`;
   }
 }
 
@@ -243,17 +258,17 @@ export function PromptLibraryTabs({ tracks }: { tracks: PromptTrackConfig[] }) {
         })}
       </div>
 
-      {/* 2. How to switch tracks (collapsible) */}
+      {/* 2. How to switch tracks (collapsible) — neutral slate/zinc (not green) */}
       <details
-        className="tracks-help-details mt-5 rounded-xl border border-emerald-200/70 bg-linear-to-br from-emerald-50/90 to-teal-50/30 open:shadow-md open:[&_.tracks-help-chevron]:rotate-180 dark:border-emerald-900/50 dark:from-emerald-950/25 dark:to-zinc-950/60"
+        className="tracks-help-details mt-5 overflow-hidden rounded-2xl border border-slate-200/90 bg-gradient-to-br from-white via-slate-50/98 to-zinc-100/55 shadow-[0_12px_40px_-14px_rgba(15,23,42,0.14)] ring-1 ring-white/90 open:shadow-[0_18px_48px_-12px_rgba(15,23,42,0.18)] open:[&_.tracks-help-chevron]:rotate-180 dark:border-zinc-700/85 dark:from-zinc-900/95 dark:via-zinc-950/92 dark:to-slate-950/75 dark:shadow-[0_14px_44px_-8px_rgba(0,0,0,0.55)] dark:ring-zinc-600/35"
         open
       >
-        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-xl px-4 py-3 marker:content-none [&::-webkit-details-marker]:hidden">
-          <h3 className="text-xs font-semibold uppercase tracking-wide text-emerald-900 dark:text-emerald-300/95">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3.5 marker:content-none [&::-webkit-details-marker]:hidden">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-700 dark:text-zinc-200">
             Switch tracks in seconds
           </h3>
           <span
-            className="tracks-help-chevron inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-emerald-200/80 bg-white/90 text-emerald-700 shadow-sm transition-transform duration-200 dark:border-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300"
+            className="tracks-help-chevron inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-slate-200/90 bg-white/95 text-slate-600 shadow-sm ring-1 ring-slate-100/90 transition-transform duration-200 dark:border-zinc-600 dark:bg-zinc-800/95 dark:text-zinc-200 dark:ring-zinc-700/60"
             aria-hidden
           >
             <svg
@@ -272,41 +287,43 @@ export function PromptLibraryTabs({ tracks }: { tracks: PromptTrackConfig[] }) {
             </svg>
           </span>
         </summary>
-        <div className="border-t border-emerald-200/60 px-4 py-3 dark:border-emerald-900/45">
-          <ul className="list-inside list-disc space-y-1.5 text-sm leading-relaxed text-emerald-950/90 dark:text-emerald-100/85">
+        <div className="border-t border-slate-200/80 bg-gradient-to-b from-transparent to-slate-50/50 px-4 py-3.5 dark:border-zinc-700/70 dark:to-zinc-950/40">
+          <ul className="list-inside list-disc space-y-1.5 text-sm leading-relaxed text-slate-700 dark:text-zinc-300">
             <li>
-              <strong className="font-semibold text-emerald-950 dark:text-emerald-50">
+              <strong className="font-semibold text-slate-900 dark:text-zinc-50">
                 Click
               </strong>{" "}
               any tab above—the URL updates so you can bookmark or share (
-              <code className="rounded bg-emerald-100/90 px-1 font-mono text-[11px] dark:bg-emerald-950/80">
+              <code className="rounded border border-slate-200/80 bg-white px-1 font-mono text-[11px] text-slate-800 shadow-sm dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100">
                 ?track=…
               </code>
               ).
             </li>
             <li>
               Press{" "}
-              <kbd className="rounded border border-emerald-300 bg-white px-1.5 py-0.5 font-mono text-[11px] shadow-sm dark:border-emerald-800 dark:bg-zinc-900">
+              <kbd className="rounded border border-slate-300 bg-white px-1.5 py-0.5 font-mono text-[11px] text-slate-800 shadow-sm dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100">
                 1
               </kbd>
-              -
-              <kbd className="rounded border border-emerald-300 bg-white px-1.5 py-0.5 font-mono text-[11px] shadow-sm dark:border-emerald-800 dark:bg-zinc-900">
+              –
+              <kbd className="rounded border border-slate-300 bg-white px-1.5 py-0.5 font-mono text-[11px] text-slate-800 shadow-sm dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100">
                 8
               </kbd>{" "}
               while focus is{" "}
-              <strong className="font-semibold">not</strong> in a text field to
-              jump by position (JavaScript ={" "}
-              <kbd className="rounded border border-emerald-300 bg-white px-1 font-mono text-[11px] dark:border-emerald-800 dark:bg-zinc-900">
+              <strong className="font-semibold text-slate-900 dark:text-zinc-50">
+                not
+              </strong>{" "}
+              in a text field to jump by position (JavaScript ={" "}
+              <kbd className="rounded border border-slate-300 bg-white px-1 font-mono text-[11px] dark:border-zinc-600 dark:bg-zinc-900">
                 1
               </kbd>
               , …).
             </li>
             <li>
               Click inside the tab strip once, then use{" "}
-              <kbd className="rounded border border-emerald-300 bg-white px-1 font-mono text-[11px] dark:border-emerald-800 dark:bg-zinc-900">
+              <kbd className="rounded border border-slate-300 bg-white px-1 font-mono text-[11px] dark:border-zinc-600 dark:bg-zinc-900">
                 ←
               </kbd>{" "}
-              <kbd className="rounded border border-emerald-300 bg-white px-1 font-mono text-[11px] dark:border-emerald-800 dark:bg-zinc-900">
+              <kbd className="rounded border border-slate-300 bg-white px-1 font-mono text-[11px] dark:border-zinc-600 dark:bg-zinc-900">
                 →
               </kbd>{" "}
               (or up/down) to move between tracks.
@@ -317,25 +334,29 @@ export function PromptLibraryTabs({ tracks }: { tracks: PromptTrackConfig[] }) {
 
       {/* 3. Active track description (collapsible) */}
       <details
-        className={`track-desc-details mt-5 rounded-2xl border open:shadow-md open:[&_.track-desc-chevron]:rotate-180 ${trackSpotlightClass(activeTrack.accent)}`}
+        className={`track-desc-details mt-5 rounded-2xl open:[&_.track-desc-chevron]:rotate-180 open:shadow-[0_20px_56px_-14px_rgba(0,0,0,0.12)] dark:open:shadow-[0_22px_60px_-10px_rgba(0,0,0,0.55)] ${trackSpotlightClass(activeTrack.accent)}`}
         open
       >
-        <summary className="cursor-pointer list-none rounded-2xl px-4 py-3 marker:content-none [&::-webkit-details-marker]:hidden">
-          <div className="flex items-start justify-between gap-3">
+        <summary className="relative cursor-pointer list-none px-4 py-4 marker:content-none sm:px-5 sm:py-5 [&::-webkit-details-marker]:hidden">
+          <div
+            className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/55 via-transparent to-transparent opacity-90 dark:from-white/5 dark:opacity-100"
+            aria-hidden
+          />
+          <div className="relative flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-600/90 dark:text-zinc-400">
                 Current track
               </p>
-              <h3 className="mt-1 text-xl font-bold tracking-tight text-zinc-900 sm:text-2xl dark:text-zinc-50">
+              <h3 className="mt-1 bg-gradient-to-r from-zinc-900 to-zinc-700 bg-clip-text text-xl font-bold tracking-tight text-transparent sm:text-2xl dark:from-zinc-50 dark:to-zinc-300">
                 {activeTrack.label}
               </h3>
-              <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-400">
+              <p className="mt-2 text-xs leading-relaxed text-zinc-600 dark:text-zinc-400">
                 Expand for the full track description, or collapse to focus on
                 scenarios below.
               </p>
             </div>
             <span
-              className={`track-desc-chevron inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border shadow-sm transition-transform duration-200 ${trackDescChevronClass(activeTrack.accent)}`}
+              className={`track-desc-chevron inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border shadow-md shadow-black/5 transition-transform duration-200 [box-shadow:inset_0_1px_0_rgba(255,255,255,0.55),0_4px_14px_-4px_rgba(0,0,0,0.12)] dark:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.06),0_4px_16px_-4px_rgba(0,0,0,0.45)] ${trackDescChevronClass(activeTrack.accent)}`}
               aria-hidden
             >
               <svg
@@ -355,8 +376,8 @@ export function PromptLibraryTabs({ tracks }: { tracks: PromptTrackConfig[] }) {
             </span>
           </div>
         </summary>
-        <div className="border-t border-zinc-200/60 px-4 py-3 dark:border-zinc-700/60">
-          <p className="text-sm leading-relaxed text-zinc-800 dark:text-zinc-200">
+        <div className="relative border-t border-white/50 bg-gradient-to-b from-white/30 to-transparent px-5 pb-5 pt-3 dark:border-zinc-600/45 dark:from-zinc-900/35 dark:to-transparent sm:px-6 sm:pb-6">
+          <p className="text-base leading-relaxed text-zinc-800 sm:text-[1.05rem] dark:text-zinc-200">
             {activeTrack.description}
           </p>
         </div>
