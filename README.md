@@ -62,9 +62,9 @@ On the home page, each tab is a **track** with ready-made scenarios (prompts liv
 
 - 📂 **Interview scenarios** live in `src/lib/prompts/*-seed.ts` (e.g. `system-design-seed.ts` exports sets like `SYSTEM_DESIGN_PROMPTS`). They are **not** loaded from the database — they ship with the codebase for versioning and predictability.
 - 🗄️ **SQLite** (via **Drizzle ORM**) stores **sessions** and **messages**: your history and the model’s replies. On first run the app **creates these tables** if they are missing; you can still use `npm run db:push` to sync the schema explicitly after schema changes.
-- 🔒 **OpenAI** runs **server-side only** — the API key never reaches the browser.
+- 🔒 **LLM calls** run **server-side only** — API keys never reach the browser. Configure **OpenAI**, **Anthropic**, or **Google Gemini** via environment variables (`LLM_PROVIDER`).
 
-**Stack:** **Next.js 16**, **React 19**, **Tailwind CSS 4**, **Drizzle** + **better-sqlite3**, **OpenAI** SDK, **Zod** for validation, **react-markdown** + **remark-gfm** for rich rendering in chat and export.
+**Stack:** **Next.js 16**, **React 19**, **Tailwind CSS 4**, **Drizzle** + **better-sqlite3**, **OpenAI** / **Anthropic** / **Google Generative AI** SDKs, **Zod** for validation, **react-markdown** + **remark-gfm** for rich rendering in chat and export.
 
 **Locale:** The interviewer defaults to your browser’s `Accept-Language` / `navigator.language` and mirrors the language of your latest message when you switch. Optional body field `preferredLanguage` on session and chat APIs overrides the header.
 
@@ -75,7 +75,7 @@ On the home page, each tab is a **track** with ready-made scenarios (prompts liv
 ## 📦 Prerequisites
 
 - **Node.js 20+**
-- An **OpenAI API key** (backend only)
+- An API key for your chosen provider (**OpenAI**, **Anthropic**, or **Google AI**), used only on the server — see [Configuration](#-configuration) and [.env.example](./.env.example).
 
 ---
 
@@ -84,7 +84,7 @@ On the home page, each tab is a **track** with ready-made scenarios (prompts liv
 ```bash
 npm install
 cp .env.example .env
-# Edit .env and set OPENAI_API_KEY
+# Edit .env: set LLM_PROVIDER and the matching API key (e.g. OPENAI_API_KEY)
 
 npm run db:push
 npm run dev
@@ -96,17 +96,22 @@ Open [http://localhost:3000](http://localhost:3000) and pick any track you like.
 
 ## ⚙️ Configuration
 
-| Variable         | Required | Description                                            |
-| :--------------- | :------: | :----------------------------------------------------- |
-| `OPENAI_API_KEY` |   Yes    | OpenAI key — never commit; never expose to the client  |
-| `OPENAI_MODEL`   |    No    | Default: `gpt-4o-mini`                                 |
-| `DATABASE_PATH`  |    No    | SQLite file path; default: `./data/interview-coach.db` |
+| Variable            | Required | Description |
+| :------------------ | :------: | :---------- |
+| `LLM_PROVIDER`      |    No    | `openai` (default), `anthropic`, or `google` |
+| `OPENAI_API_KEY`    | With OpenAI | Server-only; never commit or expose to the client |
+| `OPENAI_MODEL`      |    No    | Default: `gpt-4o-mini` |
+| `ANTHROPIC_API_KEY` | With Anthropic | Server-only |
+| `ANTHROPIC_MODEL`   |    No    | Default: `claude-sonnet-4-20250514` |
+| `GOOGLE_API_KEY`    | With Gemini | Server-only |
+| `GOOGLE_MODEL`      |    No    | Default: `gemini-2.0-flash` |
+| `DATABASE_PATH`     |    No    | SQLite path; default: `./data/interview-coach.db` |
 
 ---
 
 ## 💸 Costs and API usage
 
-Each session performs at least **one** model call when it starts, plus **one per message** you send. Cost depends on the model and OpenAI pricing. Smaller models (e.g. `gpt-4o-mini`) keep practice cheap. This project does **not** ship billing controls — set quotas in your OpenAI account.
+Each session performs at least **one** model call when it starts, plus **one per message** you send. Cost depends on the provider and model. Smaller models keep practice cheap. This project does **not** ship billing controls — set quotas in your cloud account.
 
 ---
 

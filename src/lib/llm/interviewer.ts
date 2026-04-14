@@ -1,11 +1,15 @@
-import OpenAI from "openai";
-import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 import {
   CATEGORY_LABEL,
   type PracticeCategory,
   type PracticePrompt,
 } from "@/lib/prompts/types";
 import { buildLanguageInstruction } from "@/lib/locale";
+import {
+  getInterviewModelForProvider,
+  getLlmProvider,
+  getLlmProviderId,
+  type InterviewChatMessage,
+} from "./providers";
 import { type InterviewTurn } from "./schema";
 import { parseInterviewTurnJson } from "./parse-turn";
 
@@ -142,16 +146,8 @@ function systemPromptForCategory(category: PracticeCategory): string {
   }
 }
 
-function getOpenAI(): OpenAI {
-  const key = process.env.OPENAI_API_KEY;
-  if (!key) {
-    throw new Error("OPENAI_API_KEY is not set");
-  }
-  return new OpenAI({ apiKey: key });
-}
-
 export function getInterviewModel(): string {
-  return process.env.OPENAI_MODEL ?? "gpt-4o-mini";
+  return getInterviewModelForProvider(getLlmProviderId());
 }
 
 export type HistoryMsg = { role: "user" | "assistant"; content: string };
@@ -182,8 +178,8 @@ export async function runInterviewTurn(
   history: HistoryMsg[],
   options?: { bootstrap?: boolean; localeHint?: string },
 ): Promise<InterviewTurn> {
-  const openai = getOpenAI();
-  const model = getInterviewModel();
+  const provider = getLlmProvider();
+  const model = getInterviewModelForProvider(provider.id);
 
   const isDesign = prompt.category === "system_design";
   const systemPrompt = systemPromptForCategory(prompt.category);
@@ -193,7 +189,7 @@ export async function runInterviewTurn(
 
   const localeHint = options?.localeHint?.trim() || "en";
 
-  const messages: ChatCompletionMessageParam[] = [
+  const messages: InterviewChatMessage[] = [
     { role: "system", content: systemPrompt },
     {
       role: "system",
@@ -218,17 +214,11 @@ export async function runInterviewTurn(
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
-      const completion = await openai.chat.completions.create({
+      const raw = await provider.completeJsonInterview({
         model,
         temperature: 0.35,
-        response_format: { type: "json_object" },
         messages,
       });
-
-      const raw = completion.choices[0]?.message?.content;
-      if (!raw) {
-        throw new Error("Empty completion from model");
-      }
 
       return parseInterviewTurnJson(raw);
     } catch (e) {

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { isLlmConfigurationErrorMessage } from "@/lib/llm/config-error";
 import { type HistoryMsg, runInterviewTurn } from "@/lib/llm/interviewer";
 import { resolveLocaleHint } from "@/lib/locale";
 import { getPromptById } from "@/lib/prompts";
@@ -110,8 +111,7 @@ export async function POST(req: Request) {
       msg =
         "The interviewer response could not be processed. Please try sending your message again.";
     }
-    const status =
-      msg.includes("OPENAI_API_KEY") || msg.includes("API key") ? 503 : 500;
+    const status = isLlmConfigurationErrorMessage(msg) ? 503 : 500;
     return NextResponse.json({ error: msg }, { status });
   }
 }

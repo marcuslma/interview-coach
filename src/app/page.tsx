@@ -109,9 +109,13 @@ export default async function HomePage() {
         </h1>
         <p className="mt-3 w-full text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
           Chat-only practice with an AI interviewer: JavaScript (default tab), TypeScript, Node.js, NestJS, Next.js, system design, software architecture, and design patterns.
-          Set{" "}
+          Configure{" "}
           <code className="rounded bg-zinc-200 px-1 font-mono text-xs dark:bg-zinc-800">
-            OPENAI_API_KEY
+            LLM_PROVIDER
+          </code>{" "}
+          and the matching API key in{" "}
+          <code className="rounded bg-zinc-200 px-1 font-mono text-xs dark:bg-zinc-800">
+            .env
           </code>{" "}
           locally. Deep links:{" "}
           <code className="rounded bg-zinc-200 px-1 font-mono text-xs dark:bg-zinc-800">
