@@ -193,7 +193,7 @@ export function PromptLibraryTabs({ tracks }: { tracks: PromptTrackConfig[] }) {
         role="tablist"
         aria-label="Choose practice track"
         onKeyDown={onTabListKeyDown}
-        className="-mx-1 flex w-full min-w-0 flex-nowrap gap-1 overflow-x-auto rounded-xl border border-zinc-200 bg-zinc-100/90 p-1.5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/85 sm:flex-wrap sm:overflow-x-visible"
+        className="flex w-full min-w-0 flex-nowrap gap-1 overflow-x-auto rounded-xl border border-zinc-200 bg-zinc-100/90 p-1.5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/85 sm:flex-wrap sm:overflow-x-visible"
       >
         {tracks.map((t) => {
           const selected = activeSlug === t.slug;
@@ -207,7 +207,7 @@ export function PromptLibraryTabs({ tracks }: { tracks: PromptTrackConfig[] }) {
               aria-controls={`panel-${t.slug}`}
               tabIndex={selected ? 0 : -1}
               onClick={() => setSlug(t.slug)}
-              className={`shrink-0 rounded-lg px-3.5 py-2.5 text-sm font-medium transition-all whitespace-nowrap ${
+              className={`shrink-0 rounded-lg px-3.5 py-2.5 text-sm font-bold transition-all whitespace-nowrap ${
                 selected
                   ? "bg-white text-zinc-900 shadow-md ring-1 ring-zinc-200/80 dark:bg-zinc-950 dark:text-zinc-50 dark:ring-zinc-700/80"
                   : "text-zinc-600 hover:bg-white/70 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-zinc-100"
@@ -219,66 +219,124 @@ export function PromptLibraryTabs({ tracks }: { tracks: PromptTrackConfig[] }) {
         })}
       </div>
 
-      {/* 2. How to switch tracks */}
-      <div className="mt-5 rounded-xl border border-emerald-200/70 bg-gradient-to-br from-emerald-50/90 to-teal-50/30 px-4 py-3.5 dark:border-emerald-900/50 dark:from-emerald-950/25 dark:to-zinc-950/60">
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-emerald-900 dark:text-emerald-300/95">
-          Switch tracks in seconds
-        </h3>
-        <ul className="mt-2 list-inside list-disc space-y-1.5 text-sm leading-relaxed text-emerald-950/90 dark:text-emerald-100/85">
-          <li>
-            <strong className="font-semibold text-emerald-950 dark:text-emerald-50">
-              Click
-            </strong>{" "}
-            any tab above—the URL updates so you can bookmark or share (
-            <code className="rounded bg-emerald-100/90 px-1 font-mono text-[11px] dark:bg-emerald-950/80">
-              ?track=…
-            </code>
-            ).
-          </li>
-          <li>
-            Press{" "}
-            <kbd className="rounded border border-emerald-300 bg-white px-1.5 py-0.5 font-mono text-[11px] shadow-sm dark:border-emerald-800 dark:bg-zinc-900">
-              1
-            </kbd>
-            –
-            <kbd className="rounded border border-emerald-300 bg-white px-1.5 py-0.5 font-mono text-[11px] shadow-sm dark:border-emerald-800 dark:bg-zinc-900">
-              8
-            </kbd>{" "}
-            while focus is{" "}
-            <strong className="font-semibold">not</strong> in a text field to
-            jump by position (JavaScript ={" "}
-            <kbd className="rounded border border-emerald-300 bg-white px-1 font-mono text-[11px] dark:border-emerald-800 dark:bg-zinc-900">
-              1
-            </kbd>
-            , …).
-          </li>
-          <li>
-            Click inside the tab strip once, then use{" "}
-            <kbd className="rounded border border-emerald-300 bg-white px-1 font-mono text-[11px] dark:border-emerald-800 dark:bg-zinc-900">
-              ←
-            </kbd>{" "}
-            <kbd className="rounded border border-emerald-300 bg-white px-1 font-mono text-[11px] dark:border-emerald-800 dark:bg-zinc-900">
-              →
-            </kbd>{" "}
-            (or up/down) to move between tracks.
-          </li>
-        </ul>
-      </div>
-
-      {/* 3. Active track description (prominent) */}
-      <div
-        className={`mt-5 rounded-2xl border-2 p-5 sm:p-6 ${trackSpotlightClass(activeTrack.accent)}`}
+      {/* 2. How to switch tracks (collapsible) */}
+      <details
+        className="tracks-help-details mt-5 rounded-xl border border-emerald-200/70 bg-gradient-to-br from-emerald-50/90 to-teal-50/30 open:shadow-md open:[&_.tracks-help-chevron]:rotate-180 dark:border-emerald-900/50 dark:from-emerald-950/25 dark:to-zinc-950/60"
+        open
       >
-        <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-          Current track
-        </p>
-        <h3 className="mt-1 text-xl font-bold tracking-tight text-zinc-900 sm:text-2xl dark:text-zinc-50">
-          {activeTrack.label}
-        </h3>
-        <p className="mt-3 text-base leading-relaxed text-zinc-800 sm:text-[1.05rem] dark:text-zinc-200">
-          {activeTrack.description}
-        </p>
-      </div>
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-xl px-4 py-3.5 marker:content-none [&::-webkit-details-marker]:hidden">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-emerald-900 dark:text-emerald-300/95">
+            Switch tracks in seconds
+          </h3>
+          <span
+            className="tracks-help-chevron inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-emerald-200/80 bg-white/90 text-emerald-700 shadow-sm transition-transform duration-200 dark:border-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300"
+            aria-hidden
+          >
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+              aria-hidden
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+              />
+            </svg>
+          </span>
+        </summary>
+        <div className="border-t border-emerald-200/60 px-4 pb-4 pt-1 dark:border-emerald-900/45">
+          <ul className="list-inside list-disc space-y-1.5 text-sm leading-relaxed text-emerald-950/90 dark:text-emerald-100/85">
+            <li>
+              <strong className="font-semibold text-emerald-950 dark:text-emerald-50">
+                Click
+              </strong>{" "}
+              any tab above—the URL updates so you can bookmark or share (
+              <code className="rounded bg-emerald-100/90 px-1 font-mono text-[11px] dark:bg-emerald-950/80">
+                ?track=…
+              </code>
+              ).
+            </li>
+            <li>
+              Press{" "}
+              <kbd className="rounded border border-emerald-300 bg-white px-1.5 py-0.5 font-mono text-[11px] shadow-sm dark:border-emerald-800 dark:bg-zinc-900">
+                1
+              </kbd>
+              –
+              <kbd className="rounded border border-emerald-300 bg-white px-1.5 py-0.5 font-mono text-[11px] shadow-sm dark:border-emerald-800 dark:bg-zinc-900">
+                8
+              </kbd>{" "}
+              while focus is{" "}
+              <strong className="font-semibold">not</strong> in a text field to
+              jump by position (JavaScript ={" "}
+              <kbd className="rounded border border-emerald-300 bg-white px-1 font-mono text-[11px] dark:border-emerald-800 dark:bg-zinc-900">
+                1
+              </kbd>
+              , …).
+            </li>
+            <li>
+              Click inside the tab strip once, then use{" "}
+              <kbd className="rounded border border-emerald-300 bg-white px-1 font-mono text-[11px] dark:border-emerald-800 dark:bg-zinc-900">
+                ←
+              </kbd>{" "}
+              <kbd className="rounded border border-emerald-300 bg-white px-1 font-mono text-[11px] dark:border-emerald-800 dark:bg-zinc-900">
+                →
+              </kbd>{" "}
+              (or up/down) to move between tracks.
+            </li>
+          </ul>
+        </div>
+      </details>
+
+      {/* 3. Active track description (collapsible) */}
+      <details
+        className={`track-desc-details mt-5 rounded-2xl border-2 open:shadow-md open:[&_.track-desc-chevron]:rotate-180 ${trackSpotlightClass(activeTrack.accent)}`}
+        open
+      >
+        <summary className="cursor-pointer list-none rounded-2xl p-5 marker:content-none sm:p-6 [&::-webkit-details-marker]:hidden">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                Current track
+              </p>
+              <h3 className="mt-1 text-xl font-bold tracking-tight text-zinc-900 sm:text-2xl dark:text-zinc-50">
+                {activeTrack.label}
+              </h3>
+              <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-400">
+                Expand for the full track description, or collapse to focus on
+                scenarios below.
+              </p>
+            </div>
+            <span
+              className="track-desc-chevron inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-zinc-300/80 bg-white/90 text-zinc-600 shadow-sm transition-transform duration-200 dark:border-zinc-600 dark:bg-zinc-900/90 dark:text-zinc-300"
+              aria-hidden
+            >
+              <svg
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+                aria-hidden
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                />
+              </svg>
+            </span>
+          </div>
+        </summary>
+        <div className="border-t border-zinc-200/60 px-5 pb-5 pt-0 dark:border-zinc-700/60 sm:px-6 sm:pb-6">
+          <p className="text-base leading-relaxed text-zinc-800 sm:text-[1.05rem] dark:text-zinc-200">
+            {activeTrack.description}
+          </p>
+        </div>
+      </details>
 
       {/* 4. Scenario cards */}
       <div className="mt-8">
