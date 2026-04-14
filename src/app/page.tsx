@@ -15,35 +15,39 @@ export default async function HomePage() {
       slug: "javascript",
       label: "JavaScript",
       description:
-        "Language fundamentals: execution order, semantics, closures, Big-O — JavaScript only.",
+        "Pure ECMAScript depth: event loop and microtasks, closures and scope, this binding, coercion, modules, and Big-O on small snippets—exactly the kind of language grilling you see in frontend and Node screens.",
       prompts: listPromptsByCategory("javascript"),
       accent: "js",
     },
     {
       slug: "typescript",
       label: "TypeScript",
-      description: "Types, narrowing, generics, utility types, modules.",
+      description:
+        "The type-system interview: narrowing, generics, inference, utility and mapped types, structural typing, and async-aware typing—practice explaining your reasoning, not compiler trivia.",
       prompts: listPromptsByCategory("typescript"),
       accent: "ts",
     },
     {
       slug: "nodejs",
       label: "Node.js",
-      description: "Runtime, streams, modules, process, scaling patterns.",
+      description:
+        "Runtime mechanics that matter: libuv, event loop phases, streams and backpressure, buffers, process and module resolution, and when to reach for workers or clustering.",
       prompts: listPromptsByCategory("nodejs"),
       accent: "node",
     },
     {
       slug: "nestjs",
       label: "NestJS",
-      description: "DI, modules, guards, pipes, interceptors, REST.",
+      description:
+        "Opinionated server frameworks: modules and DI scopes, guards, pipes, interceptors, filters, REST shape, validation, and when message transports beat HTTP.",
       prompts: listPromptsByCategory("nestjs"),
       accent: "nest",
     },
     {
       slug: "nextjs",
       label: "Next.js",
-      description: "App Router, RSC, caching, route handlers, metadata.",
+      description:
+        "App Router-era Next: Server vs Client Components, layouts, caching and data fetching, route handlers and server actions (conceptually), metadata, and performance trade-offs.",
       prompts: listPromptsByCategory("nextjs"),
       accent: "next",
     },
@@ -51,7 +55,7 @@ export default async function HomePage() {
       slug: "system_design",
       label: "System design",
       description:
-        "Architecture, trade-offs, capacity, APIs, data, reliability.",
+        "Large-scale systems: clarify requirements, sketch capacity, APIs and data, consistency, reliability, and trade-offs—whiteboard style, without diving into a single framework.",
       prompts: listPromptsByCategory("system_design"),
       accent: "design",
     },
@@ -59,7 +63,7 @@ export default async function HomePage() {
       slug: "software_architecture",
       label: "Software architecture",
       description:
-        "SOLID, Clean/Hexagonal, DDD tactical, boundaries, CQRS, evolution.",
+        "Code-level architecture: SOLID, Clean and Hexagonal boundaries, DDD building blocks, CQRS in principle, packaging, integration styles, and how to evolve a codebase safely.",
       prompts: listPromptsByCategory("software_architecture"),
       accent: "arch",
     },
@@ -67,7 +71,7 @@ export default async function HomePage() {
       slug: "design_patterns",
       label: "Design patterns",
       description:
-        "GoF patterns, Repository/UoW, DI—when to use and when to skip.",
+        "Classic GoF and enterprise patterns—know when they pay off and when they add noise. Expect small TypeScript sketches, comparisons (Adapter vs Decorator), and honest trade-offs.",
       prompts: listPromptsByCategory("design_patterns"),
       accent: "patterns",
     },
