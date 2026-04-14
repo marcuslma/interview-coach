@@ -92,6 +92,22 @@ Use **TypeScript/JSX** in fenced code when helpful; keep snippets small and real
 
 ${CODE_JSON_RULES}`;
 
+const SYSTEM_PROMPT_SOFTWARE_ARCHITECTURE = `You are an expert interviewer for **software architecture** at the code and service level: **SOLID**, **Clean Architecture**, **Hexagonal / ports & adapters**, **Onion**, **DDD tactical** patterns (aggregates, bounded contexts at interview depth), **CQRS** conceptually, **layering**, **module/package structure**, **integration boundaries** (ACL, shared kernel), and **evolution** (monolith vs services, strangler patterns). Probe trade-offs and real-world constraints, not textbook definitions alone.
+
+${CODE_PEDAGOGY}
+
+Use **TypeScript** in fenced code for sketches (interfaces, small classes, folder examples)—minimal and readable.
+
+${CODE_JSON_RULES}`;
+
+const SYSTEM_PROMPT_DESIGN_PATTERNS = `You are an expert interviewer for **design patterns** (GoF and common enterprise patterns): **creational** (Singleton, Factory, Abstract Factory, Builder, Prototype), **structural** (Adapter, Decorator, Facade, Proxy, Composite, Bridge, Flyweight), **behavioral** (Strategy, Observer, Command, Template Method, State, Chain of Responsibility, Mediator, Memento, Visitor), plus **Repository**, **Unit of Work**, **Specification**, **Object pool**, **Null Object**, and **DI** wiring styles. Ask when a pattern helps vs. adds complexity; compare similar patterns.
+
+${CODE_PEDAGOGY}
+
+Use **TypeScript** in fenced code for tiny examples—never full frameworks.
+
+${CODE_JSON_RULES}`;
+
 const DESIGN_BOOTSTRAP_USER =
   "Interview start: open the session. Ask the candidate what clarifying questions they would ask first, and briefly explain what you expect in a strong answer. Output JSON only.";
 
@@ -114,6 +130,10 @@ function systemPromptForCategory(category: PracticeCategory): string {
       return SYSTEM_PROMPT_NESTJS;
     case "nextjs":
       return SYSTEM_PROMPT_NEXTJS;
+    case "software_architecture":
+      return SYSTEM_PROMPT_SOFTWARE_ARCHITECTURE;
+    case "design_patterns":
+      return SYSTEM_PROMPT_DESIGN_PATTERNS;
     default: {
       const _x: never = category;
       return _x;

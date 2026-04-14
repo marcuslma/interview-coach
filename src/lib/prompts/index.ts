@@ -1,7 +1,9 @@
+import { DESIGN_PATTERNS_PROMPTS } from "./design-patterns-seed";
 import { JAVASCRIPT_PROMPTS } from "./javascript-seed";
 import { NESTJS_PROMPTS } from "./nestjs-seed";
 import { NEXTJS_PROMPTS } from "./nextjs-seed";
 import { NODEJS_PROMPTS } from "./nodejs-seed";
+import { SOFTWARE_ARCHITECTURE_PROMPTS } from "./software-architecture-seed";
 import { SYSTEM_DESIGN_PROMPTS } from "./system-design-seed";
 import type { PracticeCategory, PracticePrompt } from "./types";
 import { TYPESCRIPT_PROMPTS } from "./typescript-seed";
@@ -11,6 +13,8 @@ const ALL_PROMPTS: PracticePrompt[] = [
   ...SYSTEM_DESIGN_PROMPTS,
   ...NODEJS_PROMPTS,
   ...TYPESCRIPT_PROMPTS,
+  ...SOFTWARE_ARCHITECTURE_PROMPTS,
+  ...DESIGN_PATTERNS_PROMPTS,
   ...NESTJS_PROMPTS,
   ...NEXTJS_PROMPTS,
 ];

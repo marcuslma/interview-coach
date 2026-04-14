@@ -15,7 +15,7 @@ export type PromptTrackConfig = {
   label: string;
   description: string;
   prompts: PracticePrompt[];
-  accent: "js" | "design" | "node" | "ts" | "nest" | "next";
+  accent: "js" | "design" | "node" | "ts" | "nest" | "next" | "arch" | "patterns";
 };
 
 function cardAccentClass(accent: PromptTrackConfig["accent"]): string {
@@ -32,6 +32,10 @@ function cardAccentClass(accent: PromptTrackConfig["accent"]): string {
       return "border-red-200/90 dark:border-red-900/45";
     case "next":
       return "border-zinc-300 dark:border-zinc-600";
+    case "arch":
+      return "border-amber-200/90 dark:border-amber-900/45";
+    case "patterns":
+      return "border-cyan-200/90 dark:border-cyan-900/45";
     default:
       return "border-zinc-200 dark:border-zinc-800";
   }

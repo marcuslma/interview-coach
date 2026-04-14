@@ -1,7 +1,7 @@
 {
   "name": "interview-coach",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -10,7 +10,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "db:clear": "node scripts/clear-db.mjs",
+    "db:reset": "node scripts/reset-db.mjs && drizzle-kit push"
   },
   "dependencies": {
     "better-sqlite3": "^12.9.0",

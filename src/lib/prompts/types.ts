@@ -4,7 +4,9 @@ export type PracticeCategory =
   | "nodejs"
   | "typescript"
   | "nestjs"
-  | "nextjs";
+  | "nextjs"
+  | "software_architecture"
+  | "design_patterns";
 
 /** Default tab when `?track=` is omitted (clean URL). */
 export const DEFAULT_TRACK_SLUG = "system_design";
@@ -17,6 +19,8 @@ export const TRACK_SLUGS: {
   { slug: "system_design", category: "system_design" },
   { slug: "javascript", category: "javascript" },
   { slug: "typescript", category: "typescript" },
+  { slug: "software_architecture", category: "software_architecture" },
+  { slug: "design_patterns", category: "design_patterns" },
   { slug: "nodejs", category: "nodejs" },
   { slug: "nestjs", category: "nestjs" },
   { slug: "nextjs", category: "nextjs" },
@@ -60,4 +64,6 @@ export const CATEGORY_LABEL: Record<PracticeCategory, string> = {
   typescript: "TypeScript",
   nestjs: "NestJS",
   nextjs: "Next.js",
+  software_architecture: "Software architecture",
+  design_patterns: "Design patterns",
 };

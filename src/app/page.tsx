@@ -35,6 +35,22 @@ export default async function HomePage() {
       accent: "ts",
     },
     {
+      slug: "software_architecture",
+      label: "Software architecture",
+      description:
+        "SOLID, Clean/Hexagonal, DDD tactical, boundaries, CQRS, evolution.",
+      prompts: listPromptsByCategory("software_architecture"),
+      accent: "arch",
+    },
+    {
+      slug: "design_patterns",
+      label: "Design patterns",
+      description:
+        "GoF patterns, Repository/UoW, DI—when to use and when to skip.",
+      prompts: listPromptsByCategory("design_patterns"),
+      accent: "patterns",
+    },
+    {
       slug: "nodejs",
       label: "Node.js",
       description: "Runtime, streams, modules, process, scaling patterns.",
@@ -88,7 +104,7 @@ export default async function HomePage() {
           Interview Coach
         </h1>
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
-          Chat-only practice with an AI interviewer: system design (default tab), JavaScript, TypeScript, Node.js, NestJS, and Next.js.
+          Chat-only practice with an AI interviewer: system design (default tab), JavaScript, TypeScript, software architecture, design patterns, Node.js, NestJS, and Next.js.
           Set{" "}
           <code className="rounded bg-zinc-200 px-1 font-mono text-xs dark:bg-zinc-800">
             OPENAI_API_KEY
