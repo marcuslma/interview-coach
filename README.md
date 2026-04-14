@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Interview Coach
 
-## Getting Started
+**npm package:** `interview-coach`
 
-First, run the development server:
+Open-source web app to practice **technical interviews** in **six tracks** (tabs on the home page):
+
+1. **JavaScript fundamentals** (default) — language-only snippets: execution order, semantics, closures, Big-O, optimizations.
+2. **System design** — architecture, trade-offs, capacity, APIs, data, reliability.
+3. **Node.js** — runtime, streams, modules, process, scaling patterns.
+4. **TypeScript** — types, narrowing, generics, utility types.
+5. **NestJS** — DI, modules, guards, pipes, interceptors.
+6. **Next.js** — App Router, RSC, caching, route handlers, metadata.
+
+Experience: **chat-only** with an **LLM-backed interviewer**, structured **phases**, **session history** (with **delete**), and **Markdown export** with a final **rubric**.
+
+Interview scenarios live in **`src/lib/prompts/*-seed.ts`** (e.g. **`system-design-seed.ts`** exports `SYSTEM_DESIGN_PROMPTS`) — they are **not** loaded from the database; SQLite only stores your sessions and messages.
+
+## Prerequisites
+
+- Node.js 20+
+- An OpenAI API key (server-side only)
+
+## Quick start
 
 ```bash
+npm install
+cp .env.example .env
+# Edit .env and set OPENAI_API_KEY
+
+npm run db:push
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000). The **JavaScript** tab is selected by default (no query string). Other tracks: `?track=system_design`, `?track=nodejs`, `?track=typescript`, `?track=nestjs`, `?track=nextjs`, or `?track=javascript` explicitly.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Configuration
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `OPENAI_API_KEY` | Yes | OpenAI API key (never commit; never expose to the browser). |
+| `OPENAI_MODEL` | No | Defaults to `gpt-4o-mini`. |
+| `DATABASE_PATH` | No | SQLite file path; defaults to `./data/interview-coach.db`. |
 
-## Learn More
+## Costs and API usage
 
-To learn more about Next.js, take a look at the following resources:
+Each session performs at least one model call when it starts, plus one per message you send. Costs depend on OpenAI pricing and the model you choose. Prefer smaller models (e.g. `gpt-4o-mini`) for cheaper practice. This project does not ship billing controls; set quotas in your OpenAI account.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Scripts
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `npm run dev` — development server
+- `npm run build` / `npm run start` — production
+- `npm run lint` — ESLint
+- `npm run db:push` — apply SQLite schema (Drizzle)
+- `npm run db:studio` — Drizzle Studio (optional)
 
-## Deploy on Vercel
+## Upgrading from older versions
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+If your SQLite DB still has a `mermaid_content` column on `sessions` (removed in current code), drop it once:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+sqlite3 ./data/interview-coach.db "ALTER TABLE sessions DROP COLUMN mermaid_content;"
+```
+
+If you still use the older default file `sds-coach.db`, set `DATABASE_PATH` accordingly or copy/rename the file to `interview-coach.db`.
+
+## Self-hosting
+
+1. Build: `npm run build`
+2. Run: `npm run start`
+3. Provide env vars on the host (same as local).
+4. Persist `./data` (or your `DATABASE_PATH`) if you care about session history across deploys.
+
+## License
+
+MIT — see [LICENSE](./LICENSE).
