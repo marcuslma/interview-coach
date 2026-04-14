@@ -9,30 +9,30 @@ export type PracticeCategory =
   | "design_patterns";
 
 /** Default tab when `?track=` is omitted (clean URL). */
-export const DEFAULT_TRACK_SLUG = "system_design";
+export const DEFAULT_TRACK_SLUG = "javascript";
 
-/** URL query ?track=… slugs (default tab: system_design) */
+/** URL query ?track=… slugs (default tab: javascript) */
 export const TRACK_SLUGS: {
   slug: string;
   category: PracticeCategory;
 }[] = [
-  { slug: "system_design", category: "system_design" },
   { slug: "javascript", category: "javascript" },
   { slug: "typescript", category: "typescript" },
-  { slug: "software_architecture", category: "software_architecture" },
-  { slug: "design_patterns", category: "design_patterns" },
   { slug: "nodejs", category: "nodejs" },
   { slug: "nestjs", category: "nestjs" },
   { slug: "nextjs", category: "nextjs" },
+  { slug: "system_design", category: "system_design" },
+  { slug: "software_architecture", category: "software_architecture" },
+  { slug: "design_patterns", category: "design_patterns" },
 ];
 
 export function categoryFromTrackParam(param: string | null): PracticeCategory {
   if (!param) {
-    return "system_design";
+    return "javascript";
   }
 
   const found = TRACK_SLUGS.find((t) => t.slug === param);
-  return found?.category ?? "system_design";
+  return found?.category ?? "javascript";
 }
 
 export function trackSlugFromCategory(

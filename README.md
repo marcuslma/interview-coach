@@ -43,18 +43,18 @@ On the home page, each tab is a **track** with ready-made scenarios (prompts liv
 
 | Track                       | Focus                                                                                                               |
 | :-------------------------- | :------------------------------------------------------------------------------------------------------------------ |
-| 🏗️ **System design**        | Distributed systems: trade-offs, capacity, APIs, data, reliability _(default tab when you open the app)_             |
-| ⚡ **JavaScript**           | Language fundamentals: execution order, semantics, closures, Big-O, optimizations                                 |
+| ⚡ **JavaScript**           | Language fundamentals: execution order, semantics, closures, Big-O, optimizations _(default tab when you open the app)_ |
 | 🛡️ **TypeScript**           | Types, narrowing, generics, utility types                                                                           |
-| 🧱 **Software architecture** | SOLID, Clean/Hexagonal, DDD tactical, boundaries, CQRS, evolution                                                  |
-| 🧩 **Design patterns**      | GoF and enterprise patterns: creational/structural/behavioral, Repository, DI, etc.                                  |
 | 🌱 **Node.js**              | Runtime, streams, modules, process, scaling patterns                                                                |
 | 🐱 **NestJS**               | DI, modules, guards, pipes, interceptors                                                                            |
 | 🚀 **Next.js**              | App Router, RSC, caching, route handlers, metadata                                                                  |
+| 🏗️ **System design**        | Distributed systems: trade-offs, capacity, APIs, data, reliability                                                  |
+| 🧱 **Software architecture** | SOLID, Clean/Hexagonal, DDD tactical, boundaries, CQRS, evolution                                                  |
+| 🧩 **Design patterns**      | GoF and enterprise patterns: creational/structural/behavioral, Repository, DI, etc.                                  |
 
-**Quick URLs:** with no query string, the **System design** tab is selected. Examples:
+**Quick URLs:** with no query string, the **JavaScript** tab is selected. Examples:
 
-`?track=javascript` · `?track=typescript` · `?track=software_architecture` · `?track=design_patterns` · `?track=nodejs` · `?track=nestjs` · `?track=nextjs` · `?track=system_design`
+`?track=typescript` · `?track=nodejs` · `?track=nestjs` · `?track=nextjs` · `?track=system_design` · `?track=software_architecture` · `?track=design_patterns` · `?track=javascript`
 
 ---
 

@@ -12,14 +12,6 @@ export const dynamic = "force-dynamic";
 export default async function HomePage() {
   const tracks: PromptTrackConfig[] = [
     {
-      slug: "system_design",
-      label: "System design",
-      description:
-        "Architecture, trade-offs, capacity, APIs, data, reliability.",
-      prompts: listPromptsByCategory("system_design"),
-      accent: "design",
-    },
-    {
       slug: "javascript",
       label: "JavaScript",
       description:
@@ -33,22 +25,6 @@ export default async function HomePage() {
       description: "Types, narrowing, generics, utility types, modules.",
       prompts: listPromptsByCategory("typescript"),
       accent: "ts",
-    },
-    {
-      slug: "software_architecture",
-      label: "Software architecture",
-      description:
-        "SOLID, Clean/Hexagonal, DDD tactical, boundaries, CQRS, evolution.",
-      prompts: listPromptsByCategory("software_architecture"),
-      accent: "arch",
-    },
-    {
-      slug: "design_patterns",
-      label: "Design patterns",
-      description:
-        "GoF patterns, Repository/UoW, DI—when to use and when to skip.",
-      prompts: listPromptsByCategory("design_patterns"),
-      accent: "patterns",
     },
     {
       slug: "nodejs",
@@ -70,6 +46,30 @@ export default async function HomePage() {
       description: "App Router, RSC, caching, route handlers, metadata.",
       prompts: listPromptsByCategory("nextjs"),
       accent: "next",
+    },
+    {
+      slug: "system_design",
+      label: "System design",
+      description:
+        "Architecture, trade-offs, capacity, APIs, data, reliability.",
+      prompts: listPromptsByCategory("system_design"),
+      accent: "design",
+    },
+    {
+      slug: "software_architecture",
+      label: "Software architecture",
+      description:
+        "SOLID, Clean/Hexagonal, DDD tactical, boundaries, CQRS, evolution.",
+      prompts: listPromptsByCategory("software_architecture"),
+      accent: "arch",
+    },
+    {
+      slug: "design_patterns",
+      label: "Design patterns",
+      description:
+        "GoF patterns, Repository/UoW, DI—when to use and when to skip.",
+      prompts: listPromptsByCategory("design_patterns"),
+      accent: "patterns",
     },
   ];
 
@@ -104,20 +104,20 @@ export default async function HomePage() {
           Interview Coach
         </h1>
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
-          Chat-only practice with an AI interviewer: system design (default tab), JavaScript, TypeScript, software architecture, design patterns, Node.js, NestJS, and Next.js.
+          Chat-only practice with an AI interviewer: JavaScript (default tab), TypeScript, Node.js, NestJS, Next.js, system design, software architecture, and design patterns.
           Set{" "}
           <code className="rounded bg-zinc-200 px-1 font-mono text-xs dark:bg-zinc-800">
             OPENAI_API_KEY
           </code>{" "}
           locally. Deep links:{" "}
           <code className="rounded bg-zinc-200 px-1 font-mono text-xs dark:bg-zinc-800">
-            ?track=javascript
+            ?track=system_design
           </code>
           ,{" "}
           <code className="rounded bg-zinc-200 px-1 font-mono text-xs dark:bg-zinc-800">
             ?track=nextjs
           </code>
-          , etc. With no query string, the first tab (system design) is selected.
+          , etc. With no query string, the first tab (JavaScript) is selected.
         </p>
       </div>
 
