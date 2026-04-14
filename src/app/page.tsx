@@ -107,7 +107,7 @@ export default async function HomePage() {
         <h1 className="mt-2 text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
           Interview Coach
         </h1>
-        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
+        <p className="mt-3 w-full text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
           Chat-only practice with an AI interviewer: JavaScript (default tab), TypeScript, Node.js, NestJS, Next.js, system design, software architecture, and design patterns.
           Set{" "}
           <code className="rounded bg-zinc-200 px-1 font-mono text-xs dark:bg-zinc-800">

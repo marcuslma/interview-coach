@@ -47,7 +47,7 @@ export function RecentSessions({ initial }: { initial: RecentSessionRow[] }) {
         {rows.map((s) => (
           <li
             key={s.id}
-            className="flex items-center justify-between gap-2 px-2 py-1 sm:px-4 sm:py-3"
+            className="flex items-center justify-between gap-2 px-3 py-2"
           >
             <Link
               href={`/session/${s.id}`}
