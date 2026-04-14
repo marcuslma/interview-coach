@@ -1,16 +1,19 @@
 import { NextResponse } from "next/server";
-import { getSessionWithMessages, deleteSession } from "@/lib/sessions/service";
 import { getPromptById } from "@/lib/prompts";
+import { deleteSession, getSessionWithMessages  } from "@/lib/sessions/service";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function GET(_req: Request, context: RouteContext) {
   const { id } = await context.params;
   const data = await getSessionWithMessages(id);
+
   if (!data) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
+
   const prompt = getPromptById(data.session.promptId);
+
   return NextResponse.json({
     session: {
       id: data.session.id,
@@ -43,9 +46,11 @@ export async function GET(_req: Request, context: RouteContext) {
 export async function DELETE(_req: Request, context: RouteContext) {
   const { id } = await context.params;
   const existing = await getSessionWithMessages(id);
+
   if (!existing) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
+
   await deleteSession(id);
   return NextResponse.json({ ok: true });
 }

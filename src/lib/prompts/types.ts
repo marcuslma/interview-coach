@@ -1,5 +1,5 @@
 export type PracticeCategory =
-  | "javascript_fundamentals"
+  | "javascript"
   | "system_design"
   | "nodejs"
   | "typescript"
@@ -11,7 +11,7 @@ export const TRACK_SLUGS: {
   slug: string;
   category: PracticeCategory;
 }[] = [
-  { slug: "javascript", category: "javascript_fundamentals" },
+  { slug: "javascript", category: "javascript" },
   { slug: "system_design", category: "system_design" },
   { slug: "nodejs", category: "nodejs" },
   { slug: "typescript", category: "typescript" },
@@ -21,10 +21,11 @@ export const TRACK_SLUGS: {
 
 export function categoryFromTrackParam(param: string | null): PracticeCategory {
   if (!param || param === "javascript") {
-    return "javascript_fundamentals";
+    return "javascript";
   }
+
   const found = TRACK_SLUGS.find((t) => t.slug === param);
-  return found?.category ?? "javascript_fundamentals";
+  return found?.category ?? "javascript";
 }
 
 export function trackSlugFromCategory(
@@ -50,7 +51,7 @@ export type PracticePrompt = {
 export type DesignPrompt = PracticePrompt;
 
 export const CATEGORY_LABEL: Record<PracticeCategory, string> = {
-  javascript_fundamentals: "JavaScript fundamentals",
+  javascript: "JavaScript",
   system_design: "System design",
   nodejs: "Node.js",
   typescript: "TypeScript",

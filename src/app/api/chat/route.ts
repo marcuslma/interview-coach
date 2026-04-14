@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { type HistoryMsg, runInterviewTurn } from "@/lib/llm/interviewer";
 import { getPromptById } from "@/lib/prompts";
-import { runInterviewTurn, type HistoryMsg } from "@/lib/llm/interviewer";
 import {
-  getSessionWithMessages,
   appendMessage,
+  getSessionWithMessages,
 } from "@/lib/sessions/service";
 
 const bodySchema = z.object({

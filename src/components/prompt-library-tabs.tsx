@@ -1,10 +1,9 @@
 "use client";
 
-import { useCallback, useMemo, type KeyboardEvent } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import type { PracticePrompt } from "@/lib/prompts/types";
-import { categoryFromTrackParam, trackSlugFromCategory } from "@/lib/prompts/types";
+import { type KeyboardEvent, useCallback, useMemo } from "react";
 import { StartSessionButton } from "@/components/start-session-button";
+import { categoryFromTrackParam, type PracticePrompt, trackSlugFromCategory } from "@/lib/prompts/types";
 
 export type PromptTrackConfig = {
   slug: string;
@@ -17,15 +16,15 @@ export type PromptTrackConfig = {
 function cardAccentClass(accent: PromptTrackConfig["accent"]): string {
   switch (accent) {
     case "js":
-      return "border-amber-200/90 dark:border-amber-900/45";
+      return "border-yellow-200/90 dark:border-yellow-900/45";
     case "design":
-      return "border-emerald-200/80 dark:border-emerald-900/50";
+      return "border-purple-200/80 dark:border-purple-900/50";
     case "node":
       return "border-green-200/90 dark:border-green-900/45";
     case "ts":
-      return "border-sky-200/90 dark:border-sky-900/45";
+      return "border-blue-200/90 dark:border-blue-900/45";
     case "nest":
-      return "border-rose-200/90 dark:border-rose-900/45";
+      return "border-red-200/90 dark:border-red-900/45";
     case "next":
       return "border-zinc-300 dark:border-zinc-600";
     default:
@@ -42,7 +41,7 @@ function PromptCard({
 }) {
   return (
     <article
-      className={`flex flex-col rounded-xl border bg-white p-4 shadow-sm dark:bg-zinc-950/40 ${cardAccentClass(accent)}`}
+      className={`flex flex-col rounded-xl border-2 bg-white p-4 shadow-sm dark:bg-zinc-950/40 ${cardAccentClass(accent)}`}
     >
       <h3 className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
         {prompt.title}

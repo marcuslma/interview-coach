@@ -43,3 +43,7 @@ next-env.d.ts
 
 # local SQLite
 /data/*.db
+/data/*.db-shm
+/data/*.db-wal
+
+CONTRIBUTING.md

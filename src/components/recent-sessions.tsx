@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { CATEGORY_LABEL } from "@/lib/prompts/types";
 import type { PracticeCategory } from "@/lib/prompts/types";
+import { CATEGORY_LABEL } from "@/lib/prompts/types";
 
 export type RecentSessionRow = {
   id: string;
@@ -23,10 +23,13 @@ export function RecentSessions({ initial }: { initial: RecentSessionRow[] }) {
     ) {
       return;
     }
+
     const res = await fetch(`/api/sessions/${id}`, { method: "DELETE" });
+
     if (!res.ok) {
       return;
     }
+
     setRows((r) => r.filter((x) => x.id !== id));
     router.refresh();
   }

@@ -1,11 +1,11 @@
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
-import { interviewTurnSchema, type InterviewTurn } from "./schema";
 import {
   CATEGORY_LABEL,
   type PracticeCategory,
   type PracticePrompt,
 } from "@/lib/prompts/types";
+import { type InterviewTurn, interviewTurnSchema } from "./schema";
 
 const SYSTEM_PROMPT_DESIGN = `You are a senior staff engineer conducting a **system design interview**.
 Your job is to simulate a realistic interview loop: ask clarifying questions, probe trade-offs, and occasionally challenge assumptions—without lecturing like a textbook.
@@ -48,7 +48,7 @@ const CODE_JSON_RULES = `Rules:
 - When you have enough signal, wrap_up then complete with rubric. Rubric: assess reasoning and explanation, not only final answers.
 - Do not paste hidden evaluator notes verbatim.`;
 
-const SYSTEM_PROMPT_JAVASCRIPT = `You are an expert interviewer for **JavaScript fundamentals** (the language: ECMAScript semantics in browsers/Node). Use **JavaScript only** in code fences—no TypeScript syntax unless the candidate asks.
+const SYSTEM_PROMPT_JAVASCRIPT = `You are an expert interviewer for **JavaScript** (the language: ECMAScript semantics in browsers/Node). Use **JavaScript only** in code fences—no TypeScript syntax unless the candidate asks.
 
 ${CODE_PEDAGOGY}
 
@@ -98,7 +98,7 @@ function codeBootstrapUser(prompt: PracticePrompt): string {
 
 function systemPromptForCategory(category: PracticeCategory): string {
   switch (category) {
-    case "javascript_fundamentals":
+    case "javascript":
       return SYSTEM_PROMPT_JAVASCRIPT;
     case "system_design":
       return SYSTEM_PROMPT_DESIGN;

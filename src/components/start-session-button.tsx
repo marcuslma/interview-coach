@@ -11,16 +11,20 @@ export function StartSessionButton({ promptId }: { promptId: string }) {
   async function onClick() {
     setLoading(true);
     setError(null);
+
     try {
       const res = await fetch("/api/sessions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ promptId }),
       });
+
       const json = await res.json();
+
       if (!res.ok) {
         throw new Error(json.error ?? "Could not start session");
       }
+
       router.push(`/session/${json.sessionId as string}`);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed");

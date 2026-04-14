@@ -1,13 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChatMessage } from "@/components/chat-message";
 import { RubricPanel } from "@/components/rubric-panel";
-import { CATEGORY_LABEL } from "@/lib/prompts/types";
-import type { PracticeCategory } from "@/lib/prompts/types";
 import type { Rubric } from "@/lib/llm/schema";
+import { CATEGORY_LABEL, type PracticeCategory } from "@/lib/prompts/types";
 
 type ApiMessage = {
   id: string;
@@ -57,30 +56,37 @@ export function SessionWorkspace({ sessionId }: { sessionId: string }) {
   }, [refresh]);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [data?.messages.length, sending]);
+    if (data?.messages.length) {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [data?.messages.length]);
 
   const rubric: Rubric | null = useMemo(() => {
     if (!data?.messages?.length) {
       return null;
     }
+
     for (let i = data.messages.length - 1; i >= 0; i--) {
       const m = data.messages[i];
+
       if (m.role !== "assistant" || !m.metadataJson) {
         continue;
       }
+
       try {
         const meta = JSON.parse(m.metadataJson) as {
           session_complete?: boolean;
           rubric?: Rubric;
         };
+
         if (meta.session_complete && meta.rubric) {
           return meta.rubric;
         }
       } catch {
-        /* ignore */
+        return null;
       }
     }
+
     return null;
   }, [data?.messages]);
 
@@ -88,12 +94,15 @@ export function SessionWorkspace({ sessionId }: { sessionId: string }) {
 
   async function send() {
     const text = input.trim();
+
     if (!text || sending || sessionComplete) {
       return;
     }
+
     setSending(true);
     setChatError(null);
     setInput("");
+
     const optimistic: ApiMessage = {
       id: `local-${Date.now()}`,
       role: "user",
@@ -101,19 +110,24 @@ export function SessionWorkspace({ sessionId }: { sessionId: string }) {
       metadataJson: null,
       createdAt: new Date().toISOString(),
     };
+
     setData((prev) =>
       prev ? { ...prev, messages: [...prev.messages, optimistic] } : prev,
     );
+
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sessionId, userMessage: text }),
       });
+
       const json = await res.json();
+
       if (!res.ok) {
         throw new Error(json.error ?? "Request failed");
       }
+
       await refresh();
     } catch (e) {
       setChatError(e instanceof Error ? e.message : "Failed to send");
@@ -125,9 +139,11 @@ export function SessionWorkspace({ sessionId }: { sessionId: string }) {
 
   async function downloadExport() {
     const res = await fetch(`/api/sessions/${sessionId}/export`);
+
     if (!res.ok) {
       return;
     }
+
     const blob = await res.blob();
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -145,14 +161,18 @@ export function SessionWorkspace({ sessionId }: { sessionId: string }) {
     ) {
       return;
     }
+ 
     setDeleting(true);
+ 
     try {
       const res = await fetch(`/api/sessions/${sessionId}`, {
         method: "DELETE",
       });
+
       if (!res.ok) {
         return;
       }
+
       router.push("/");
       router.refresh();
     } finally {
@@ -228,7 +248,7 @@ export function SessionWorkspace({ sessionId }: { sessionId: string }) {
 
       {rubric && <RubricPanel rubric={rubric} />}
 
-      <section className="flex min-h-[32rem] flex-col rounded-xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-950/40">
+      <section className="flex min-h-128 flex-col rounded-xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-950/40">
         <div className="border-b border-zinc-200 px-4 py-3 dark:border-zinc-800">
           <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
             Chat
@@ -265,7 +285,7 @@ export function SessionWorkspace({ sessionId }: { sessionId: string }) {
                   ? "Session complete — review the rubric or export."
                   : "Type your answer…"
               }
-              className="min-h-[5rem] flex-1 resize-y rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 shadow-inner outline-none focus:border-emerald-600 disabled:cursor-not-allowed disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50"
+              className="min-h-20 flex-1 resize-y rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 shadow-inner outline-none focus:border-emerald-600 disabled:cursor-not-allowed disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50"
             />
             <button
               type="button"

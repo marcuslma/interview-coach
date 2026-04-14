@@ -3,7 +3,7 @@ import type { PracticePrompt } from "./types";
 /** JavaScript only — execution order, semantics, complexity */
 export const JAVASCRIPT_PROMPTS: PracticePrompt[] = [
   {
-    category: "javascript_fundamentals",
+    category: "javascript",
     id: "js-event-loop-ordering",
     title: "Event loop & print order",
     summary:
@@ -16,7 +16,7 @@ export const JAVASCRIPT_PROMPTS: PracticePrompt[] = [
       "Use short snippets. Always teach or name **microtasks vs macrotasks** when Promises/setTimeout appear. After each answer: explain *why*, ask the candidate *why*, then offer a slightly harder snippet. Include at least one snippet mixing sync + Promise + setTimeout(0).",
   },
   {
-    category: "javascript_fundamentals",
+    category: "javascript",
     id: "js-references-mutation",
     title: "References, assignment & mutation",
     summary: "What does B hold after A changes? Objects, arrays, primitives.",
@@ -28,7 +28,7 @@ export const JAVASCRIPT_PROMPTS: PracticePrompt[] = [
       "Ask: given A and B = A or B = [...A], what changes when A is reassigned or mutated? Use small examples.",
   },
   {
-    category: "javascript_fundamentals",
+    category: "javascript",
     id: "js-closures-scope",
     title: "Closures & lexical scope",
     summary: "What does a nested function close over? Classic loop/var pitfalls.",
@@ -40,7 +40,7 @@ export const JAVASCRIPT_PROMPTS: PracticePrompt[] = [
       "Short functions with inner functions or loops. Ask what prints or final values. Include let vs var in loops when appropriate.",
   },
   {
-    category: "javascript_fundamentals",
+    category: "javascript",
     id: "js-this-binding",
     title: "`this` binding",
     summary: "How `this` is resolved in methods, arrows, call/apply, and classes.",
@@ -49,10 +49,10 @@ export const JAVASCRIPT_PROMPTS: PracticePrompt[] = [
     candidateBrief:
       "Predict behavior when functions are passed around, bound, or called as methods.",
     evaluatorNotes:
-      "Use 5–15 line snippets. Ask what `this` refers to or what logs. Cover implicit binding, arrow lexical this, and explicit bind.",
+      "Use 5-15 line snippets. Ask what `this` refers to or what logs. Cover implicit binding, arrow lexical this, and explicit bind.",
   },
   {
-    category: "javascript_fundamentals",
+    category: "javascript",
     id: "js-big-o-from-code",
     title: "Time & space from code",
     summary: "Big-O of loops, nested structures, and hidden costs.",
@@ -64,7 +64,7 @@ export const JAVASCRIPT_PROMPTS: PracticePrompt[] = [
       "Ask for Big-O then **one concrete optimization** (e.g. Set for lookups). Focus on reasoning.",
   },
   {
-    category: "javascript_fundamentals",
+    category: "javascript",
     id: "js-array-object-methods",
     title: "Array/object built-ins & chaining",
     summary: "map/filter/reduce behavior, shallow copies, and accidental complexity.",
@@ -76,7 +76,7 @@ export const JAVASCRIPT_PROMPTS: PracticePrompt[] = [
       "Ask complexity of chained operations vs single pass. Include reduce accumulator pitfalls.",
   },
   {
-    category: "javascript_fundamentals",
+    category: "javascript",
     id: "js-promises-async-await",
     title: "Promises & async/await sequencing",
     summary: "Order of awaits, parallel vs sequential, error propagation.",
@@ -88,7 +88,7 @@ export const JAVASCRIPT_PROMPTS: PracticePrompt[] = [
       "Print-order questions with async IIFE patterns. Explain why after each answer.",
   },
   {
-    category: "javascript_fundamentals",
+    category: "javascript",
     id: "js-equality-coercion",
     title: "Equality & coercion (gotchas)",
     summary: "== vs ===, object equality, and tricky comparisons.",
@@ -100,7 +100,7 @@ export const JAVASCRIPT_PROMPTS: PracticePrompt[] = [
       "Keep it short and professional. Prefer === in solutions but test understanding of == when relevant.",
   },
   {
-    category: "javascript_fundamentals",
+    category: "javascript",
     id: "js-memory-gc-lite",
     title: "Garbage collection & closures (lite)",
     summary: "What stays alive? Practical retention scenarios.",
@@ -112,7 +112,7 @@ export const JAVASCRIPT_PROMPTS: PracticePrompt[] = [
       "Conceptual level. Ask whether a large array can be collected in a given pattern.",
   },
   {
-    category: "javascript_fundamentals",
+    category: "javascript",
     id: "algo-optimize-loop",
     title: "Spot the inefficiency",
     summary: "Find redundant work and improve asymptotic or constant factors.",
@@ -124,7 +124,7 @@ export const JAVASCRIPT_PROMPTS: PracticePrompt[] = [
       "Classic nested find in loop → map/Set. Ask for **before/after complexity** and trade-offs.",
   },
   {
-    category: "javascript_fundamentals",
+    category: "javascript",
     id: "js-modules-scope-runtime",
     title: "Modules & scope (conceptual)",
     summary: "ES modules: live bindings vs copies, scope puzzles.",

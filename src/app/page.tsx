@@ -16,7 +16,7 @@ export default async function HomePage() {
       label: "JavaScript",
       description:
         "Language fundamentals: execution order, semantics, closures, Big-O — JavaScript only.",
-      prompts: listPromptsByCategory("javascript_fundamentals"),
+      prompts: listPromptsByCategory("javascript"),
       accent: "js",
     },
     {
@@ -71,7 +71,7 @@ export default async function HomePage() {
         id: s.id,
         title: s.title,
         updatedAt: s.updatedAt.toISOString(),
-        category: p?.category ?? "javascript_fundamentals",
+        category: p?.category ?? "javascript",
       };
     });
   } catch {
@@ -88,8 +88,7 @@ export default async function HomePage() {
           Interview Coach
         </h1>
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
-          Chat-only practice with an AI interviewer: JavaScript fundamentals
-          (default), system design, Node.js, TypeScript, NestJS, and Next.js.
+          Chat-only practice with an AI interviewer: JavaScript (default), system design, Node.js, TypeScript, NestJS, and Next.js.
           Set{" "}
           <code className="rounded bg-zinc-200 px-1 font-mono text-xs dark:bg-zinc-800">
             OPENAI_API_KEY

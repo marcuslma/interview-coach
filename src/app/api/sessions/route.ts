@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { getPromptById } from "@/lib/prompts";
 import { runInterviewTurn } from "@/lib/llm/interviewer";
+import { getPromptById } from "@/lib/prompts";
 import {
-  createSessionRecord,
   appendMessage,
+  createSessionRecord,
   listSessions,
 } from "@/lib/sessions/service";
 
@@ -14,6 +14,7 @@ const bodySchema = z.object({
 
 export async function POST(req: Request) {
   let json: unknown;
+
   try {
     json = await req.json();
   } catch {
@@ -21,11 +22,13 @@ export async function POST(req: Request) {
   }
 
   const parsed = bodySchema.safeParse(json);
+
   if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+    return NextResponse.json({ error: z.treeifyError(parsed.error) }, { status: 400 });
   }
 
   const practice = getPromptById(parsed.data.promptId);
+
   if (!practice) {
     return NextResponse.json({ error: "Unknown promptId" }, { status: 404 });
   }

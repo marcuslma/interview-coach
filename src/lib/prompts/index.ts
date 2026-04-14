@@ -1,11 +1,10 @@
 import { JAVASCRIPT_PROMPTS } from "./javascript-seed";
-import { NEXTJS_PROMPTS } from "./nextjs-seed";
 import { NESTJS_PROMPTS } from "./nestjs-seed";
+import { NEXTJS_PROMPTS } from "./nextjs-seed";
 import { NODEJS_PROMPTS } from "./nodejs-seed";
 import { SYSTEM_DESIGN_PROMPTS } from "./system-design-seed";
+import type { PracticeCategory, PracticePrompt } from "./types";
 import { TYPESCRIPT_PROMPTS } from "./typescript-seed";
-import type { PracticePrompt } from "./types";
-import type { PracticeCategory } from "./types";
 
 const ALL_PROMPTS: PracticePrompt[] = [
   ...JAVASCRIPT_PROMPTS,

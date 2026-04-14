@@ -9,10 +9,13 @@ function resolveDbPath(): string {
   const abs = path.isAbsolute(raw)
     ? raw
     : path.join(process.cwd(), raw.replace(/^\.\//, ""));
+
   const dir = path.dirname(abs);
+
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
+
   return abs;
 }
 
@@ -25,16 +28,20 @@ function getDb() {
   if (globalForDb.db) {
     return globalForDb.db;
   }
+
   const sqlite = new Database(resolveDbPath(), {
     timeout: 8000,
   });
+
   sqlite.pragma("journal_mode = WAL");
   sqlite.pragma("busy_timeout = 8000");
   const db = drizzle(sqlite, { schema });
+
   if (process.env.NODE_ENV !== "production") {
     globalForDb.sqlite = sqlite;
     globalForDb.db = db;
   }
+
   return db;
 }
 

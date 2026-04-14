@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { getSessionWithMessages } from "@/lib/sessions/service";
-import { getPromptById } from "@/lib/prompts";
 import { buildSessionMarkdown } from "@/lib/export/markdown";
 import type { Rubric } from "@/lib/llm/schema";
+import { getPromptById } from "@/lib/prompts";
+import { getSessionWithMessages } from "@/lib/sessions/service";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -10,20 +10,24 @@ function safeParseRubric(json: string | null): Rubric | null {
   if (!json) {
     return null;
   }
+
   try {
     const o = JSON.parse(json) as { rubric?: Rubric; session_complete?: boolean };
+  
     if (o.session_complete && o.rubric) {
       return o.rubric;
     }
   } catch {
     return null;
   }
+
   return null;
 }
 
 export async function GET(_req: Request, context: RouteContext) {
   const { id } = await context.params;
   const data = await getSessionWithMessages(id);
+
   if (!data) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
@@ -34,6 +38,7 @@ export async function GET(_req: Request, context: RouteContext) {
     .map((m) => ({ role: m.role, content: m.content }));
 
   let rubric: Rubric | null = null;
+
   for (let i = data.messages.length - 1; i >= 0; i--) {
     const m = data.messages[i];
     if (m.role === "assistant" && m.metadataJson) {

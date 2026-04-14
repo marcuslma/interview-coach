@@ -1,11 +1,3 @@
-/**
- * System design interview catalog — static data shipped with the app (not stored in SQLite).
- *
- * - Every entry has `category: "system_design"`.
- * - To add a scenario: append an object with unique `id`, `title`, `summary`, `tags`,
- *   `candidateBrief` (shown in UI), and `evaluatorNotes` (guides the LLM only).
- * - Keep IDs stable: they may appear in stored session rows as `prompt_id`.
- */
 import type { PracticePrompt } from "./types";
 
 export const SYSTEM_DESIGN_PROMPTS: PracticePrompt[] = [

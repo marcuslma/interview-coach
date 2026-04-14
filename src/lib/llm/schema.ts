@@ -13,13 +13,11 @@ export const rubricSchema = z.object({
   study_next: z.array(z.string()).min(1),
 });
 
-/** System design phases */
 export const interviewPhaseSchema = z.enum([
   "clarification",
   "capacity",
   "api_data",
   "deep_dive",
-  /** Language fundamentals: warmup, then topic-focused phases */
   "warmup",
   "ordering",
   "semantics",
@@ -43,6 +41,7 @@ export const interviewTurnSchema = z
           message: "phase must be complete when session_complete is true",
         });
       }
+
       if (val.rubric == null) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,

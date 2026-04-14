@@ -15,9 +15,9 @@ export function buildSessionMarkdown(input: {
   lines.push("## Brief");
   lines.push(input.promptSummary);
   lines.push("");
-
   lines.push("## Transcript");
   lines.push("");
+
   for (const m of input.transcript) {
     const label = m.role === "assistant" ? "Interviewer" : "You";
     lines.push(`### ${label}`);
@@ -33,15 +33,19 @@ export function buildSessionMarkdown(input: {
     lines.push("");
     lines.push(input.rubric.summary);
     lines.push("");
+
     for (const d of input.rubric.dimensions) {
       lines.push(`- **${d.name}** (${d.score}/10): ${d.comment}`);
     }
+
     lines.push("");
     lines.push("### Study next");
     lines.push("");
+
     for (const s of input.rubric.study_next) {
       lines.push(`- ${s}`);
     }
+
     lines.push("");
   }
 

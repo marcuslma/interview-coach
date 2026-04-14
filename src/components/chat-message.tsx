@@ -10,6 +10,7 @@ type Props = {
 
 export function ChatMessage({ role, children }: Props) {
   const isUser = role === "user";
+
   return (
     <div
       className={`max-w-[min(100%,52rem)] rounded-lg px-4 py-3 text-sm leading-relaxed ${

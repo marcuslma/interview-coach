@@ -1,4 +1,4 @@
-import { eq, desc } from "drizzle-orm";
+import { desc,eq } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
 
 export async function createSessionRecord(input: {
@@ -7,6 +7,7 @@ export async function createSessionRecord(input: {
   title: string;
 }) {
   const now = new Date();
+
   await db.insert(schema.sessions).values({
     id: input.id,
     promptId: input.promptId,
@@ -31,6 +32,7 @@ export async function appendMessage(input: {
     metadataJson: input.metadataJson ?? null,
     createdAt: new Date(),
   });
+
   await db
     .update(schema.sessions)
     .set({ updatedAt: new Date() })
@@ -41,6 +43,7 @@ export async function deleteSession(sessionId: string) {
   await db
     .delete(schema.messages)
     .where(eq(schema.messages.sessionId, sessionId));
+
   await db.delete(schema.sessions).where(eq(schema.sessions.id, sessionId));
 }
 
@@ -57,13 +60,16 @@ export async function getSessionWithMessages(sessionId: string) {
     .from(schema.sessions)
     .where(eq(schema.sessions.id, sessionId))
     .limit(1);
+
   if (session.length === 0) {
     return null;
   }
+
   const msgs = await db
     .select()
     .from(schema.messages)
     .where(eq(schema.messages.sessionId, sessionId))
     .orderBy(schema.messages.createdAt);
+
   return { session: session[0], messages: msgs };
 }
