@@ -1,26 +1,79 @@
 # Interview Coach
 
+<div align="center">
+
+**Practice technical interviews with an AI interviewer — at your pace, in your browser.**
+
+🎤 · 💬 · 🧠 · 🚀
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+[![Node](https://img.shields.io/badge/node-%3E%3D20-brightgreen)](https://nodejs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
+
+_Vibe coded · human reviewed_
+
+</div>
+
+---
+
+## ✨ What is this?
+
+**Interview Coach** is a **public web project**: a **chat-only** app for practicing **technical interviews** — pick a scenario, talk to an LLM-backed “interviewer,” and follow **phases**, **session history**, and a closing **rubric**, with optional **Markdown export** of the whole thread.
+
+The codebase was built in a _vibe coding_ spirit (fast iteration, product and flow first) but went through **human review** for consistency, basic safety, and quality before landing in this public repository — ideas at speed, delivery with care.
+
 **npm package:** `interview-coach`
 
-Open-source web app to practice **technical interviews** in **six tracks** (tabs on the home page):
+---
 
-1. **JavaScript fundamentals** (default) — language-only snippets: execution order, semantics, closures, Big-O, optimizations.
-2. **System design** — architecture, trade-offs, capacity, APIs, data, reliability.
-3. **Node.js** — runtime, streams, modules, process, scaling patterns.
-4. **TypeScript** — types, narrowing, generics, utility types.
-5. **NestJS** — DI, modules, guards, pipes, interceptors.
-6. **Next.js** — App Router, RSC, caching, route handlers, metadata.
+## 🎯 Why use it?
 
-Experience: **chat-only** with an **LLM-backed interviewer**, structured **phases**, **session history** (with **delete**), and **Markdown export** with a final **rubric**.
+|                            |                                                                        |
+| :------------------------: | :--------------------------------------------------------------------- |
+|     ✨ **Six tracks**      | From vanilla JavaScript to system design and modern frameworks         |
+| 🗄️ **Persistent sessions** | SQLite stores your chats locally (or on the server you deploy to)      |
+|       📄 **Export**        | Markdown with context + rubric for later review                        |
+|    ⚡ **Low friction**     | Simple UI: tabs on the home page, chat in-session, history with delete |
 
-Interview scenarios live in **`src/lib/prompts/*-seed.ts`** (e.g. **`system-design-seed.ts`** exports `SYSTEM_DESIGN_PROMPTS`) — they are **not** loaded from the database; SQLite only stores your sessions and messages.
+---
 
-## Prerequisites
+## 🗂️ The six tracks
 
-- Node.js 20+
-- An OpenAI API key (server-side only)
+On the home page, each tab is a **track** with ready-made scenarios (prompts live in code):
 
-## Quick start
+| Track                | Focus                                                                                                               |
+| :------------------- | :------------------------------------------------------------------------------------------------------------------ |
+| ⚡ **JavaScript**    | Language fundamentals: execution order, semantics, closures, Big-O, optimizations _(default when you open the app)_ |
+| 🏗️ **System design** | Architecture, trade-offs, capacity, APIs, data, reliability                                                         |
+| 🌱 **Node.js**       | Runtime, streams, modules, process, scaling patterns                                                                |
+| 🛡️ **TypeScript**    | Types, narrowing, generics, utility types                                                                           |
+| 🐱 **NestJS**        | DI, modules, guards, pipes, interceptors                                                                            |
+| 🚀 **Next.js**       | App Router, RSC, caching, route handlers, metadata                                                                  |
+
+**Quick URLs:** the **JavaScript** tab is selected by default. To deep-link another track, use a query string:
+
+`?track=javascript` · `?track=system_design` · `?track=nodejs` · `?track=typescript` · `?track=nestjs` · `?track=nextjs`
+
+---
+
+## 🧱 How it works under the hood
+
+- 📂 **Interview scenarios** live in `src/lib/prompts/*-seed.ts` (e.g. `system-design-seed.ts` exports sets like `SYSTEM_DESIGN_PROMPTS`). They are **not** loaded from the database — they ship with the codebase for versioning and predictability.
+- 🗄️ **SQLite** (via **Drizzle ORM**) stores **sessions** and **messages**: your history and the model’s replies.
+- 🔒 **OpenAI** runs **server-side only** — the API key never reaches the browser.
+
+**Stack:** **Next.js 16**, **React 19**, **Tailwind CSS 4**, **Drizzle** + **better-sqlite3**, **OpenAI** SDK, **Zod** for validation, **react-markdown** + **remark-gfm** for rich rendering in chat and export.
+
+---
+
+## 📦 Prerequisites
+
+- **Node.js 20+**
+- An **OpenAI API key** (backend only)
+
+---
+
+## 🚀 Quick start
 
 ```bash
 npm install
@@ -31,45 +84,57 @@ npm run db:push
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). The **JavaScript** tab is selected by default (no query string). Other tracks: `?track=system_design`, `?track=nodejs`, `?track=typescript`, `?track=nestjs`, `?track=nextjs`, or `?track=javascript` explicitly.
+Open [http://localhost:3000](http://localhost:3000) and pick any track you like.
 
-## Configuration
+---
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `OPENAI_API_KEY` | Yes | OpenAI API key (never commit; never expose to the browser). |
-| `OPENAI_MODEL` | No | Defaults to `gpt-4o-mini`. |
-| `DATABASE_PATH` | No | SQLite file path; defaults to `./data/interview-coach.db`. |
+## ⚙️ Configuration
 
-## Costs and API usage
+| Variable         | Required | Description                                            |
+| :--------------- | :------: | :----------------------------------------------------- |
+| `OPENAI_API_KEY` |   Yes    | OpenAI key — never commit; never expose to the client  |
+| `OPENAI_MODEL`   |    No    | Default: `gpt-4o-mini`                                 |
+| `DATABASE_PATH`  |    No    | SQLite file path; default: `./data/interview-coach.db` |
 
-Each session performs at least one model call when it starts, plus one per message you send. Costs depend on OpenAI pricing and the model you choose. Prefer smaller models (e.g. `gpt-4o-mini`) for cheaper practice. This project does not ship billing controls; set quotas in your OpenAI account.
+---
 
-## Scripts
+## 💸 Costs and API usage
 
-- `npm run dev` — development server
-- `npm run build` / `npm run start` — production
-- `npm run lint` — ESLint
-- `npm run db:push` — apply SQLite schema (Drizzle)
-- `npm run db:studio` — Drizzle Studio (optional)
+Each session performs at least **one** model call when it starts, plus **one per message** you send. Cost depends on the model and OpenAI pricing. Smaller models (e.g. `gpt-4o-mini`) keep practice cheap. This project does **not** ship billing controls — set quotas in your OpenAI account.
 
-## Upgrading from older versions
+---
 
-If your SQLite DB still has a `mermaid_content` column on `sessions` (removed in current code), drop it once:
+## 🛠️ Scripts
 
-```bash
-sqlite3 ./data/interview-coach.db "ALTER TABLE sessions DROP COLUMN mermaid_content;"
-```
+| Command                           | What it does                  |
+| :-------------------------------- | :---------------------------- |
+| `npm run dev`                     | Development server            |
+| `npm run build` / `npm run start` | Production build and start    |
+| `npm run lint`                    | ESLint                        |
+| `npm run db:push`                 | Apply SQLite schema (Drizzle) |
+| `npm run db:studio`               | Drizzle Studio (inspect data) |
 
-If you still use the older default file `sds-coach.db`, set `DATABASE_PATH` accordingly or copy/rename the file to `interview-coach.db`.
+---
 
-## Self-hosting
+## 🌐 Self-hosting
 
-1. Build: `npm run build`
-2. Run: `npm run start`
-3. Provide env vars on the host (same as local).
-4. Persist `./data` (or your `DATABASE_PATH`) if you care about session history across deploys.
+1. `npm run build`
+2. `npm run start`
+3. Provide the same environment variables on the host
+4. Persist `./data` (or your `DATABASE_PATH`) if you want session history across deploys
 
-## License
+---
 
-MIT — see [LICENSE](./LICENSE).
+## 📜 License
+
+**MIT** — see [LICENSE](./LICENSE).
+
+---
+
+<div align="center">
+
+**Happy practicing — and good luck in your interviews.**
+
+Made with curiosity · reviewed with care
+
+</div>
