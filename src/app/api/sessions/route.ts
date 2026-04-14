@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { runInterviewTurn } from "@/lib/llm/interviewer";
+import { resolveLocaleHint } from "@/lib/locale";
 import { getPromptById } from "@/lib/prompts";
 import {
   appendMessage,
@@ -10,6 +11,7 @@ import {
 
 const bodySchema = z.object({
   promptId: z.string().min(1),
+  preferredLanguage: z.string().max(48).optional(),
 });
 
 export async function POST(req: Request) {
@@ -33,6 +35,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unknown promptId" }, { status: 404 });
   }
 
+  const localeHint = resolveLocaleHint(
+    parsed.data.preferredLanguage,
+    req.headers.get("accept-language"),
+  );
+
   const sessionId = crypto.randomUUID();
 
   try {
@@ -42,7 +49,10 @@ export async function POST(req: Request) {
       title: practice.title,
     });
 
-    const turn = await runInterviewTurn(practice, [], { bootstrap: true });
+    const turn = await runInterviewTurn(practice, [], {
+      bootstrap: true,
+      localeHint,
+    });
 
     const assistantMeta = JSON.stringify({
       phase: turn.phase,

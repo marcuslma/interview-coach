@@ -66,6 +66,10 @@ On the home page, each tab is a **track** with ready-made scenarios (prompts liv
 
 **Stack:** **Next.js 16**, **React 19**, **Tailwind CSS 4**, **Drizzle** + **better-sqlite3**, **OpenAI** SDK, **Zod** for validation, **react-markdown** + **remark-gfm** for rich rendering in chat and export.
 
+**Locale:** The interviewer defaults to your browser’s `Accept-Language` / `navigator.language` and mirrors the language of your latest message when you switch. Optional body field `preferredLanguage` on session and chat APIs overrides the header.
+
+**Shortcuts (home):** keys **1–8** switch tracks when focus is not in an input. **Session chat:** **Enter** sends, **Shift+Enter** newline, **Ctrl/Cmd+Enter** also sends.
+
 ---
 
 ## 📦 Prerequisites

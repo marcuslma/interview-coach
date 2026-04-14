@@ -38,8 +38,11 @@ export default function RootLayout({
             >
               Interview Coach
             </Link>
-            <span className="text-xs text-zinc-500 dark:text-zinc-400">
-              Local · OSS
+            <span
+              className="text-xs text-zinc-500 dark:text-zinc-400"
+              title="Runs on your device or server; open-source (OSS) code you can inspect and self-host."
+            >
+              Runs locally · Open source
             </span>
           </div>
         </header>

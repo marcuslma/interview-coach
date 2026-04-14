@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { type HistoryMsg, runInterviewTurn } from "@/lib/llm/interviewer";
+import { resolveLocaleHint } from "@/lib/locale";
 import { getPromptById } from "@/lib/prompts";
 import {
   appendMessage,
@@ -10,6 +11,7 @@ import {
 const bodySchema = z.object({
   sessionId: z.string().uuid(),
   userMessage: z.string().min(1).max(32000),
+  preferredLanguage: z.string().max(48).optional(),
 });
 
 export async function POST(req: Request) {
@@ -25,7 +27,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
   }
 
-  const { sessionId, userMessage } = parsed.data;
+  const { sessionId, userMessage, preferredLanguage } = parsed.data;
+
+  const localeHint = resolveLocaleHint(
+    preferredLanguage,
+    req.headers.get("accept-language"),
+  );
 
   const data = await getSessionWithMessages(sessionId);
   if (!data) {
@@ -72,7 +79,7 @@ export async function POST(req: Request) {
   history.push({ role: "user", content: userMessage });
 
   try {
-    const turn = await runInterviewTurn(practice, history);
+    const turn = await runInterviewTurn(practice, history, { localeHint });
 
     const assistantMeta = JSON.stringify({
       phase: turn.phase,

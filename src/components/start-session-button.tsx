@@ -16,7 +16,11 @@ export function StartSessionButton({ promptId }: { promptId: string }) {
       const res = await fetch("/api/sessions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ promptId }),
+        body: JSON.stringify({
+          promptId,
+          preferredLanguage:
+            typeof navigator !== "undefined" ? navigator.language : undefined,
+        }),
       });
 
       const json = await res.json();

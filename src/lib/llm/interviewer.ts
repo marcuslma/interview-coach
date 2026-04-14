@@ -5,6 +5,7 @@ import {
   type PracticeCategory,
   type PracticePrompt,
 } from "@/lib/prompts/types";
+import { buildLanguageInstruction } from "@/lib/locale";
 import { type InterviewTurn } from "./schema";
 import { parseInterviewTurnJson } from "./parse-turn";
 
@@ -179,7 +180,7 @@ function buildCodeContext(prompt: PracticePrompt): string {
 export async function runInterviewTurn(
   prompt: PracticePrompt,
   history: HistoryMsg[],
-  options?: { bootstrap?: boolean },
+  options?: { bootstrap?: boolean; localeHint?: string },
 ): Promise<InterviewTurn> {
   const openai = getOpenAI();
   const model = getInterviewModel();
@@ -190,12 +191,15 @@ export async function runInterviewTurn(
     ? buildDesignContext(prompt)
     : buildCodeContext(prompt);
 
+  const localeHint = options?.localeHint?.trim() || "en";
+
   const messages: ChatCompletionMessageParam[] = [
     { role: "system", content: systemPrompt },
     {
       role: "system",
       content: `Context for this session:\n${contextBlock}`,
     },
+    { role: "system", content: buildLanguageInstruction(localeHint) },
   ];
 
   for (const m of history) {

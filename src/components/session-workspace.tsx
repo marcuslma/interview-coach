@@ -2,7 +2,14 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type KeyboardEvent,
+} from "react";
 import { ChatMessage } from "@/components/chat-message";
 import { RubricPanel } from "@/components/rubric-panel";
 import type { Rubric } from "@/lib/llm/schema";
@@ -40,6 +47,8 @@ export function SessionWorkspace({ sessionId }: { sessionId: string }) {
   const [chatError, setChatError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
   const bottomRef = useRef<HTMLDivElement | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const composerFocusedOnce = useRef(false);
 
   const refresh = useCallback(async () => {
     const res = await fetch(`/api/sessions/${sessionId}`);
@@ -92,6 +101,13 @@ export function SessionWorkspace({ sessionId }: { sessionId: string }) {
 
   const sessionComplete = useMemo(() => rubric != null, [rubric]);
 
+  useEffect(() => {
+    if (data && !sessionComplete && !composerFocusedOnce.current) {
+      textareaRef.current?.focus();
+      composerFocusedOnce.current = true;
+    }
+  }, [data, sessionComplete]);
+
   async function send() {
     const text = input.trim();
 
@@ -119,7 +135,12 @@ export function SessionWorkspace({ sessionId }: { sessionId: string }) {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId, userMessage: text }),
+        body: JSON.stringify({
+          sessionId,
+          userMessage: text,
+          preferredLanguage:
+            typeof navigator !== "undefined" ? navigator.language : undefined,
+        }),
       });
 
       const json = await res.json();
@@ -134,6 +155,21 @@ export function SessionWorkspace({ sessionId }: { sessionId: string }) {
       await refresh();
     } finally {
       setSending(false);
+    }
+  }
+
+  function handleComposerKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
+    if (sessionComplete || sending) {
+      return;
+    }
+    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      void send();
+      return;
+    }
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      void send();
     }
   }
 
@@ -255,7 +291,8 @@ export function SessionWorkspace({ sessionId }: { sessionId: string }) {
           </h2>
           <p className="text-xs text-zinc-500 dark:text-zinc-400">
             Answer in your own words. The interviewer replies in phases until
-            completion.
+            completion. Language follows your browser settings and mirrors your
+            messages when you switch language.
           </p>
         </div>
         <div className="flex max-h-[min(70vh,720px)] flex-1 flex-col gap-3 overflow-y-auto px-4 py-4">
@@ -276,8 +313,10 @@ export function SessionWorkspace({ sessionId }: { sessionId: string }) {
         <div className="border-t border-zinc-200 p-3 dark:border-zinc-800">
           <div className="flex gap-2">
             <textarea
+              ref={textareaRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleComposerKeyDown}
               rows={3}
               disabled={sending || sessionComplete}
               placeholder={
@@ -296,6 +335,14 @@ export function SessionWorkspace({ sessionId }: { sessionId: string }) {
               {sending ? "Sending…" : "Send"}
             </button>
           </div>
+          <p className="mt-2 text-[11px] leading-snug text-zinc-500 dark:text-zinc-400">
+            <span className="hidden sm:inline">
+              Enter to send · Shift+Enter new line · Ctrl or ⌘ + Enter to send
+              ·{" "}
+            </span>
+            <span className="sm:hidden">Enter sends · Shift+Enter for newline · </span>
+            Focus returns here after load.
+          </p>
         </div>
       </section>
     </div>

@@ -1,7 +1,12 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { type KeyboardEvent, useCallback, useMemo } from "react";
+import {
+  type KeyboardEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+} from "react";
 import { StartSessionButton } from "@/components/start-session-button";
 import {
   categoryFromTrackParam,
@@ -126,14 +131,45 @@ export function PromptLibraryTabs({ tracks }: { tracks: PromptTrackConfig[] }) {
     [activeSlug, setSlug, slugOrder],
   );
 
+  useEffect(() => {
+    function onGlobalKeyDown(ev: globalThis.KeyboardEvent) {
+      if (ev.defaultPrevented) {
+        return;
+      }
+      const el = ev.target;
+      if (
+        el instanceof HTMLInputElement ||
+        el instanceof HTMLTextAreaElement ||
+        el instanceof HTMLSelectElement ||
+        (el instanceof HTMLElement && el.isContentEditable)
+      ) {
+        return;
+      }
+      if (ev.altKey || ev.metaKey || ev.ctrlKey) {
+        return;
+      }
+      if (!/^[1-8]$/.test(ev.key)) {
+        return;
+      }
+      const n = Number.parseInt(ev.key, 10) - 1;
+      if (n < 0 || n >= slugOrder.length) {
+        return;
+      }
+      ev.preventDefault();
+      setSlug(slugOrder[n]!);
+    }
+    window.addEventListener("keydown", onGlobalKeyDown);
+    return () => window.removeEventListener("keydown", onGlobalKeyDown);
+  }, [slugOrder, setSlug]);
+
   return (
     <section aria-label="Practice tracks">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+      <div className="flex min-w-0 flex-col gap-3 xl:flex-row xl:items-start xl:justify-between xl:gap-6">
         <div
           role="tablist"
           aria-label="Choose practice track"
           onKeyDown={onTabListKeyDown}
-          className="-mx-1 flex max-w-full gap-1 overflow-x-auto rounded-lg border border-zinc-200 bg-zinc-100/80 p-1 dark:border-zinc-800 dark:bg-zinc-900/80 sm:mx-0 sm:flex-wrap"
+          className="-mx-1 flex min-w-0 max-w-full gap-1 overflow-x-auto rounded-lg border border-zinc-200 bg-zinc-100/80 p-1 dark:border-zinc-800 dark:bg-zinc-900/80 xl:mx-0 xl:flex-1 xl:flex-wrap"
         >
           {tracks.map((t) => {
             const selected = activeSlug === t.slug;
@@ -158,10 +194,32 @@ export function PromptLibraryTabs({ tracks }: { tracks: PromptTrackConfig[] }) {
             );
           })}
         </div>
-        <p className="text-xs leading-relaxed text-zinc-500 dark:text-zinc-400 sm:max-w-md sm:text-right">
+        <p className="hidden max-w-sm flex-none text-xs leading-relaxed text-zinc-500 xl:block xl:text-right dark:text-zinc-400">
           {activeTrack?.description}
         </p>
       </div>
+
+      <details className="mt-3 rounded-lg border border-zinc-200 bg-zinc-50/90 p-3 dark:border-zinc-800 dark:bg-zinc-900/50 xl:hidden">
+        <summary className="cursor-pointer text-xs font-medium text-zinc-800 dark:text-zinc-100">
+          About this track
+        </summary>
+        <p className="mt-2 text-xs leading-relaxed text-zinc-600 dark:text-zinc-300">
+          {activeTrack?.description}
+        </p>
+      </details>
+
+      <p className="mt-2 text-[11px] text-zinc-500 dark:text-zinc-400">
+        Shortcuts:{" "}
+        <kbd className="rounded border border-zinc-300 bg-white px-1 font-mono dark:border-zinc-600 dark:bg-zinc-800">
+          1
+        </kbd>
+        –
+        <kbd className="rounded border border-zinc-300 bg-white px-1 font-mono dark:border-zinc-600 dark:bg-zinc-800">
+          8
+        </kbd>{" "}
+        switch track when not typing in a field. Arrow keys navigate tabs when
+        the tab list is focused.
+      </p>
 
       <div className="mt-6">
         {tracks.map((t) => (
