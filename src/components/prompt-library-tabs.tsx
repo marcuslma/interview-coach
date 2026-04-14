@@ -48,40 +48,25 @@ function cardAccentClass(accent: PromptTrackConfig["accent"]): string {
 
 /** Highlight panel: luminous gradient + tinted shadow + ring per track */
 function trackSpotlightClass(accent: PromptTrackConfig["accent"]): string {
-  const glow = {
-    js: "shadow-[0_14px_44px_-12px_rgba(234,179,8,0.45)] dark:shadow-[0_14px_48px_-10px_rgba(234,179,8,0.22)]",
-    design:
-      "shadow-[0_14px_44px_-12px_rgba(168,85,247,0.4)] dark:shadow-[0_14px_48px_-10px_rgba(168,85,247,0.2)]",
-    node: "shadow-[0_14px_44px_-12px_rgba(16,185,129,0.42)] dark:shadow-[0_14px_48px_-10px_rgba(16,185,129,0.2)]",
-    ts: "shadow-[0_14px_44px_-12px_rgba(59,130,246,0.42)] dark:shadow-[0_14px_48px_-10px_rgba(59,130,246,0.2)]",
-    nest: "shadow-[0_14px_44px_-12px_rgba(239,68,68,0.38)] dark:shadow-[0_14px_48px_-10px_rgba(239,68,68,0.18)]",
-    next: "shadow-[0_14px_44px_-12px_rgba(113,113,122,0.35)] dark:shadow-[0_14px_48px_-10px_rgba(0,0,0,0.5)]",
-    arch: "shadow-[0_14px_44px_-12px_rgba(245,158,11,0.4)] dark:shadow-[0_14px_48px_-10px_rgba(245,158,11,0.2)]",
-    patterns:
-      "shadow-[0_14px_44px_-12px_rgba(6,182,212,0.42)] dark:shadow-[0_14px_48px_-10px_rgba(6,182,212,0.2)]",
-    default:
-      "shadow-[0_12px_40px_-12px_rgba(15,23,42,0.12)] dark:shadow-[0_12px_40px_-8px_rgba(0,0,0,0.45)]",
-  } as const;
-
   switch (accent) {
     case "js":
-      return `overflow-hidden border-2 border-yellow-400/75 bg-gradient-to-br from-yellow-50 via-amber-50/90 to-orange-50/50 ring-2 ring-yellow-200/70 ring-offset-2 ring-offset-white/90 ${glow.js} dark:border-yellow-600/60 dark:from-yellow-950/55 dark:via-amber-950/35 dark:to-zinc-950 dark:ring-yellow-800/50 dark:ring-offset-zinc-950`;
+      return `overflow-hidden border border-yellow-400/75 bg-gradient-to-br from-yellow-50 via-amber-50/90 to-orange-50/50 dark:border-yellow-600/60 dark:from-yellow-950/55 dark:via-amber-950/35 dark:to-zinc-950`;
     case "design":
-      return `overflow-hidden border-2 border-purple-400/70 bg-gradient-to-br from-purple-50 via-violet-50/85 to-fuchsia-50/45 ring-2 ring-purple-200/65 ring-offset-2 ring-offset-white/90 ${glow.design} dark:border-purple-600/55 dark:from-purple-950/50 dark:via-violet-950/35 dark:to-zinc-950 dark:ring-purple-800/45 dark:ring-offset-zinc-950`;
+      return `overflow-hidden border border-purple-400/70 bg-gradient-to-br from-purple-50 via-violet-50/85 to-fuchsia-50/45 dark:border-purple-600/55 dark:from-purple-950/50 dark:via-violet-950/35 dark:to-zinc-950`;
     case "node":
-      return `overflow-hidden border-2 border-emerald-400/70 bg-gradient-to-br from-emerald-50 via-green-50/80 to-teal-50/40 ring-2 ring-emerald-200/60 ring-offset-2 ring-offset-white/90 ${glow.node} dark:border-emerald-600/55 dark:from-emerald-950/45 dark:via-green-950/30 dark:to-zinc-950 dark:ring-emerald-800/40 dark:ring-offset-zinc-950`;
+      return `overflow-hidden border border-emerald-400/70 bg-gradient-to-br from-emerald-50 via-green-50/80 to-teal-50/40 dark:border-emerald-600/55 dark:from-emerald-950/45 dark:via-green-950/30 dark:to-zinc-950`;
     case "ts":
-      return `overflow-hidden border-2 border-blue-400/70 bg-gradient-to-br from-blue-50 via-sky-50/85 to-indigo-50/40 ring-2 ring-blue-200/65 ring-offset-2 ring-offset-white/90 ${glow.ts} dark:border-blue-600/55 dark:from-blue-950/50 dark:via-sky-950/35 dark:to-zinc-950 dark:ring-blue-800/45 dark:ring-offset-zinc-950`;
+      return `overflow-hidden border border-blue-400/70 bg-gradient-to-br from-blue-50 via-sky-50/85 to-indigo-50/40 dark:border-blue-600/55 dark:from-blue-950/50 dark:via-sky-950/35 dark:to-zinc-950`;
     case "nest":
-      return `overflow-hidden border-2 border-red-400/65 bg-gradient-to-br from-red-50 via-orange-50/75 to-amber-50/35 ring-2 ring-red-200/55 ring-offset-2 ring-offset-white/90 ${glow.nest} dark:border-red-700/55 dark:from-red-950/45 dark:via-orange-950/28 dark:to-zinc-950 dark:ring-red-900/40 dark:ring-offset-zinc-950`;
+      return `overflow-hidden border border-red-400/65 bg-gradient-to-br from-red-50 via-orange-50/75 to-amber-50/35 dark:border-red-700/55 dark:from-red-950/45 dark:via-orange-950/28 dark:to-zinc-950`;
     case "next":
-      return `overflow-hidden border-2 border-zinc-300/90 bg-gradient-to-br from-white via-zinc-50/95 to-zinc-100/70 ring-2 ring-zinc-200/80 ring-offset-2 ring-offset-white/90 ${glow.next} dark:border-zinc-600 dark:from-zinc-900/90 dark:via-zinc-950 dark:to-black dark:ring-zinc-700/70 dark:ring-offset-zinc-950`;
+      return `overflow-hidden border border-zinc-300/90 bg-gradient-to-br from-white via-zinc-50/95 to-zinc-100/70 dark:border-zinc-600 dark:from-zinc-900/90 dark:via-zinc-950 dark:to-black`;
     case "arch":
-      return `overflow-hidden border-2 border-amber-400/70 bg-gradient-to-br from-amber-50 via-orange-50/80 to-yellow-50/45 ring-2 ring-amber-200/60 ring-offset-2 ring-offset-white/90 ${glow.arch} dark:border-amber-600/55 dark:from-amber-950/48 dark:via-orange-950/32 dark:to-zinc-950 dark:ring-amber-800/42 dark:ring-offset-zinc-950`;
+      return `overflow-hidden border border-amber-400/70 bg-gradient-to-br from-amber-50 via-orange-50/80 to-yellow-50/45 dark:border-amber-600/55 dark:from-amber-950/48 dark:via-orange-950/32 dark:to-zinc-950`;
     case "patterns":
-      return `overflow-hidden border-2 border-cyan-400/70 bg-gradient-to-br from-cyan-50 via-teal-50/75 to-sky-50/40 ring-2 ring-cyan-200/58 ring-offset-2 ring-offset-white/90 ${glow.patterns} dark:border-cyan-600/55 dark:from-cyan-950/45 dark:via-teal-950/30 dark:to-zinc-950 dark:ring-cyan-800/42 dark:ring-offset-zinc-950`;
+      return `overflow-hidden border border-cyan-400/70 bg-gradient-to-br from-cyan-50 via-teal-50/75 to-sky-50/40 dark:border-cyan-600/55 dark:from-cyan-950/45 dark:via-teal-950/30 dark:to-zinc-950`;
     default:
-      return `overflow-hidden border-2 border-zinc-200 bg-gradient-to-br from-zinc-50 to-white ${glow.default} ring-2 ring-zinc-200/80 ring-offset-2 ring-offset-white dark:border-zinc-700 dark:from-zinc-900 dark:to-zinc-950 dark:ring-zinc-700/60 dark:ring-offset-zinc-950`;
+      return `overflow-hidden border border-zinc-200 bg-gradient-to-br from-zinc-50 to-white dark:border-zinc-700 dark:from-zinc-900 dark:to-zinc-950`;
   }
 }
 
@@ -89,21 +74,21 @@ function trackSpotlightClass(accent: PromptTrackConfig["accent"]): string {
 function trackDescChevronClass(accent: PromptTrackConfig["accent"]): string {
   switch (accent) {
     case "js":
-      return "border-yellow-500/60 bg-yellow-100/90 text-yellow-900 shadow-yellow-200/50 ring-1 ring-yellow-300/40 dark:border-yellow-600 dark:bg-yellow-950/70 dark:text-yellow-100 dark:shadow-none dark:ring-yellow-800/50";
+      return "border-yellow-500/60 bg-yellow-100/90 text-yellow-900 dark:border-yellow-600 dark:bg-yellow-950/70 dark:text-yellow-100";
     case "design":
-      return "border-purple-500/50 bg-purple-100/90 text-purple-900 shadow-purple-200/40 ring-1 ring-purple-300/35 dark:border-purple-600 dark:bg-purple-950/70 dark:text-purple-100 dark:ring-purple-800/45";
+      return "border-purple-500/50 bg-purple-100/90 text-purple-900 dark:border-purple-600 dark:bg-purple-950/70 dark:text-purple-100";
     case "node":
-      return "border-emerald-500/50 bg-emerald-100/90 text-emerald-900 shadow-emerald-200/40 ring-1 ring-emerald-300/35 dark:border-emerald-600 dark:bg-emerald-950/70 dark:text-emerald-100 dark:ring-emerald-800/45";
+      return "border-emerald-500/50 bg-emerald-100/90 text-emerald-900 dark:border-emerald-600 dark:bg-emerald-950/70 dark:text-emerald-100";
     case "ts":
-      return "border-blue-500/50 bg-blue-100/90 text-blue-900 shadow-blue-200/40 ring-1 ring-blue-300/35 dark:border-blue-600 dark:bg-blue-950/70 dark:text-blue-100 dark:ring-blue-800/45";
+      return "border-blue-500/50 bg-blue-100/90 text-blue-900 dark:border-blue-600 dark:bg-blue-950/70 dark:text-blue-100";
     case "nest":
-      return "border-red-500/50 bg-red-100/90 text-red-900 shadow-red-200/40 ring-1 ring-red-300/35 dark:border-red-700 dark:bg-red-950/70 dark:text-red-100 dark:ring-red-900/40";
+      return "border-red-500/50 bg-red-100/90 text-red-900 dark:border-red-700 dark:bg-red-950/70 dark:text-red-100";
     case "next":
-      return "border-zinc-400/60 bg-zinc-200/90 text-zinc-900 shadow-zinc-300/40 ring-1 ring-zinc-400/30 dark:border-zinc-500 dark:bg-zinc-800/90 dark:text-zinc-100 dark:ring-zinc-600/50";
+      return "border-zinc-400/60 bg-zinc-200/90 text-zinc-900 dark:border-zinc-500 dark:bg-zinc-800/90 dark:text-zinc-100";
     case "arch":
-      return "border-amber-500/50 bg-amber-100/90 text-amber-950 shadow-amber-200/40 ring-1 ring-amber-300/35 dark:border-amber-600 dark:bg-amber-950/70 dark:text-amber-100 dark:ring-amber-800/45";
+      return "border-amber-500/50 bg-amber-100/90 text-amber-950 dark:border-amber-600 dark:bg-amber-950/70 dark:text-amber-100";
     case "patterns":
-      return "border-cyan-500/50 bg-cyan-100/90 text-cyan-950 shadow-cyan-200/40 ring-1 ring-cyan-300/35 dark:border-cyan-600 dark:bg-cyan-950/70 dark:text-cyan-100 dark:ring-cyan-800/45";
+      return "border-cyan-500/50 bg-cyan-100/90 text-cyan-950 dark:border-cyan-600 dark:bg-cyan-950/70 dark:text-cyan-100";
     default:
       return "border-zinc-300/80 bg-white/90 text-zinc-600 dark:border-zinc-600 dark:bg-zinc-900/90 dark:text-zinc-300";
   }
@@ -248,7 +233,7 @@ export function PromptLibraryTabs({ tracks }: { tracks: PromptTrackConfig[] }) {
               onClick={() => setSlug(t.slug)}
               className={`shrink-0 rounded-lg px-3.5 py-2.5 text-sm font-bold transition-all whitespace-nowrap ${
                 selected
-                  ? "bg-white text-zinc-900 shadow-md ring-1 ring-zinc-200/80 dark:bg-zinc-950 dark:text-zinc-50 dark:ring-zinc-700/80"
+                  ? "bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50"
                   : "text-zinc-600 hover:bg-white/70 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/80 dark:hover:text-zinc-100"
               }`}
             >
@@ -260,7 +245,7 @@ export function PromptLibraryTabs({ tracks }: { tracks: PromptTrackConfig[] }) {
 
       {/* 2. How to switch tracks (collapsible) — neutral slate/zinc (not green) */}
       <details
-        className="tracks-help-details mt-5 overflow-hidden rounded-2xl border border-slate-200/90 bg-gradient-to-br from-white via-slate-50/98 to-zinc-100/55 shadow-[0_12px_40px_-14px_rgba(15,23,42,0.14)] ring-1 ring-white/90 open:shadow-[0_18px_48px_-12px_rgba(15,23,42,0.18)] open:[&_.tracks-help-chevron]:rotate-180 dark:border-zinc-700/85 dark:from-zinc-900/95 dark:via-zinc-950/92 dark:to-slate-950/75 dark:shadow-[0_14px_44px_-8px_rgba(0,0,0,0.55)] dark:ring-zinc-600/35"
+        className="tracks-help-details mt-5 overflow-hidden rounded-2xl border border-slate-200/90 bg-linear-to-br from-white via-slate-50/98 to-zinc-100/55 open:[&_.tracks-help-chevron]:rotate-180 dark:border-zinc-700/85 dark:from-zinc-900/95 dark:via-zinc-950/92 dark:to-slate-950/75"
         open
       >
         <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3.5 marker:content-none [&::-webkit-details-marker]:hidden">
@@ -268,7 +253,7 @@ export function PromptLibraryTabs({ tracks }: { tracks: PromptTrackConfig[] }) {
             Switch tracks in seconds
           </h3>
           <span
-            className="tracks-help-chevron inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-slate-200/90 bg-white/95 text-slate-600 shadow-sm ring-1 ring-slate-100/90 transition-transform duration-200 dark:border-zinc-600 dark:bg-zinc-800/95 dark:text-zinc-200 dark:ring-zinc-700/60"
+            className="tracks-help-chevron inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-slate-200/90 bg-white/95 text-slate-600 transition-transform duration-200 dark:border-zinc-600 dark:bg-zinc-800/95 dark:text-zinc-200"
             aria-hidden
           >
             <svg
@@ -287,7 +272,7 @@ export function PromptLibraryTabs({ tracks }: { tracks: PromptTrackConfig[] }) {
             </svg>
           </span>
         </summary>
-        <div className="border-t border-slate-200/80 bg-gradient-to-b from-transparent to-slate-50/50 px-4 py-3.5 dark:border-zinc-700/70 dark:to-zinc-950/40">
+        <div className="border-t border-slate-200/80 bg-linear-to-b from-transparent to-slate-50/50 px-4 py-3.5 dark:border-zinc-700/70 dark:to-zinc-950/40">
           <ul className="list-inside list-disc space-y-1.5 text-sm leading-relaxed text-slate-700 dark:text-zinc-300">
             <li>
               <strong className="font-semibold text-slate-900 dark:text-zinc-50">
@@ -337,17 +322,13 @@ export function PromptLibraryTabs({ tracks }: { tracks: PromptTrackConfig[] }) {
         className={`track-desc-details mt-5 rounded-2xl open:[&_.track-desc-chevron]:rotate-180 open:shadow-[0_20px_56px_-14px_rgba(0,0,0,0.12)] dark:open:shadow-[0_22px_60px_-10px_rgba(0,0,0,0.55)] ${trackSpotlightClass(activeTrack.accent)}`}
         open
       >
-        <summary className="relative cursor-pointer list-none px-4 py-4 marker:content-none sm:px-5 sm:py-5 [&::-webkit-details-marker]:hidden">
-          <div
-            className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/55 via-transparent to-transparent opacity-90 dark:from-white/5 dark:opacity-100"
-            aria-hidden
-          />
+        <summary className="relative cursor-pointer list-none px-4 py-3 marker:content-none [&::-webkit-details-marker]:hidden">
           <div className="relative flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
               <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-600/90 dark:text-zinc-400">
                 Current track
               </p>
-              <h3 className="mt-1 bg-gradient-to-r from-zinc-900 to-zinc-700 bg-clip-text text-xl font-bold tracking-tight text-transparent sm:text-2xl dark:from-zinc-50 dark:to-zinc-300">
+              <h3 className="mt-1 bg-linear-to-r from-zinc-900 to-zinc-700 bg-clip-text text-xl font-bold tracking-tight text-transparent sm:text-2xl dark:from-zinc-50 dark:to-zinc-300">
                 {activeTrack.label}
               </h3>
               <p className="mt-2 text-xs leading-relaxed text-zinc-600 dark:text-zinc-400">
@@ -356,7 +337,7 @@ export function PromptLibraryTabs({ tracks }: { tracks: PromptTrackConfig[] }) {
               </p>
             </div>
             <span
-              className={`track-desc-chevron inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border shadow-md shadow-black/5 transition-transform duration-200 [box-shadow:inset_0_1px_0_rgba(255,255,255,0.55),0_4px_14px_-4px_rgba(0,0,0,0.12)] dark:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.06),0_4px_16px_-4px_rgba(0,0,0,0.45)] ${trackDescChevronClass(activeTrack.accent)}`}
+              className={`track-desc-chevron inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border shadow-md shadow-black/5 transition-transform duration-200 [box-shadow:inset_0_1px_0_rgba(255,255,255,0.55),0_4px_14px_-4px_rgba(0,0,0,0.12)] dark:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.06),0_4px_16px_-4px_rgba(0,0,0,0.45)] ${trackDescChevronClass(activeTrack.accent)}`}
               aria-hidden
             >
               <svg
@@ -376,8 +357,8 @@ export function PromptLibraryTabs({ tracks }: { tracks: PromptTrackConfig[] }) {
             </span>
           </div>
         </summary>
-        <div className="relative border-t border-white/50 bg-gradient-to-b from-white/30 to-transparent px-5 pb-5 pt-3 dark:border-zinc-600/45 dark:from-zinc-900/35 dark:to-transparent sm:px-6 sm:pb-6">
-          <p className="text-base leading-relaxed text-zinc-800 sm:text-[1.05rem] dark:text-zinc-200">
+        <div className="relative border-t border-white/50 bg-linear-to-b from-white/30 to-transparent px-4 py-3 dark:border-zinc-600/45 dark:from-zinc-900/35 dark:to-transparent">
+          <p className="text-sm leading-relaxed text-zinc-800 dark:text-zinc-200">
             {activeTrack.description}
           </p>
         </div>

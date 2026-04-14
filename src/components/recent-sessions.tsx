@@ -43,7 +43,7 @@ export function RecentSessions({ initial }: { initial: RecentSessionRow[] }) {
       <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
         Recent sessions
       </h2>
-      <ul className="mt-3 divide-y divide-zinc-200 rounded-lg border border-zinc-200 bg-white dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-950/40">
+      <ul className="mt-3 divide-y divide-zinc-200 rounded-xl border border-zinc-200 bg-white dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-950/40">
         {rows.map((s) => (
           <li
             key={s.id}
