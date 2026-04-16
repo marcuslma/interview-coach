@@ -1,8 +1,10 @@
 import { DESIGN_PATTERNS_PROMPTS } from "./design-patterns-seed";
 import { JAVASCRIPT_PROMPTS } from "./javascript-seed";
+import { MONGODB_PROMPTS } from "./mongodb-seed";
 import { NESTJS_PROMPTS } from "./nestjs-seed";
 import { NEXTJS_PROMPTS } from "./nextjs-seed";
 import { NODEJS_PROMPTS } from "./nodejs-seed";
+import { POSTGRESQL_PROMPTS } from "./postgresql-seed";
 import { SOFTWARE_ARCHITECTURE_PROMPTS } from "./software-architecture-seed";
 import { SYSTEM_DESIGN_PROMPTS } from "./system-design-seed";
 import type { PracticeCategory, PracticePrompt } from "./types";
@@ -17,6 +19,8 @@ const ALL_PROMPTS: PracticePrompt[] = [
   ...DESIGN_PATTERNS_PROMPTS,
   ...NESTJS_PROMPTS,
   ...NEXTJS_PROMPTS,
+  ...MONGODB_PROMPTS,
+  ...POSTGRESQL_PROMPTS,
 ];
 
 const byId = new Map(ALL_PROMPTS.map((p) => [p.id, p]));

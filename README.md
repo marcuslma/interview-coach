@@ -30,14 +30,14 @@ The codebase was built in a _vibe coding_ spirit (fast iteration, product and fl
 
 |                            |                                                                        |
 | :------------------------: | :--------------------------------------------------------------------- |
-|    ✨ **Eight tracks**     | System design, languages, architecture, patterns, Node, Nest, Next, and more |
+|    ✨ **Ten tracks**     | Languages, databases, Node, Nest, Next, system design, architecture, patterns, and more |
 | 🗄️ **Persistent sessions** | SQLite stores your chats locally (or on the server you deploy to)      |
 |       📄 **Export**        | Markdown with context + rubric for later review                        |
 |    ⚡ **Low friction**     | Simple UI: tabs on the home page, chat in-session, history with delete |
 
 ---
 
-## 🗂️ The eight tracks
+## 🗂️ The ten tracks
 
 On the home page, each tab is a **track** with ready-made scenarios (prompts live in code):
 
@@ -48,13 +48,15 @@ On the home page, each tab is a **track** with ready-made scenarios (prompts liv
 | 🌱 **Node.js**              | Runtime, streams, modules, process, scaling patterns                                                                |
 | 🐱 **NestJS**               | DI, modules, guards, pipes, interceptors                                                                            |
 | 🚀 **Next.js**              | App Router, RSC, caching, route handlers, metadata                                                                  |
+| 🍃 **MongoDB**              | Indexes, aggregation, replication, sharding, document modeling, transactions                                       |
+| 🐘 **PostgreSQL**           | MVCC, isolation, indexes, EXPLAIN, locks, partitioning, jsonb                                                       |
 | 🏗️ **System design**        | Distributed systems: trade-offs, capacity, APIs, data, reliability                                                  |
 | 🧱 **Software architecture** | SOLID, Clean/Hexagonal, DDD tactical, boundaries, CQRS, evolution                                                  |
 | 🧩 **Design patterns**      | GoF and enterprise patterns: creational/structural/behavioral, Repository, DI, etc.                                  |
 
 **Quick URLs:** with no query string, the **JavaScript** tab is selected. Examples:
 
-`?track=typescript` · `?track=nodejs` · `?track=nestjs` · `?track=nextjs` · `?track=system_design` · `?track=software_architecture` · `?track=design_patterns` · `?track=javascript`
+`?track=typescript` · `?track=nodejs` · `?track=nestjs` · `?track=nextjs` · `?track=mongodb` · `?track=postgresql` · `?track=system_design` · `?track=software_architecture` · `?track=design_patterns` · `?track=javascript`
 
 ---
 
@@ -68,7 +70,7 @@ On the home page, each tab is a **track** with ready-made scenarios (prompts liv
 
 **Locale:** The interviewer defaults to your browser’s `Accept-Language` / `navigator.language` and mirrors the language of your latest message when you switch. Optional body field `preferredLanguage` on session and chat APIs overrides the header.
 
-**Shortcuts (home):** keys **1–8** switch tracks when focus is not in an input. **Session chat:** **Enter** sends, **Shift+Enter** newline, **Ctrl/Cmd+Enter** also sends.
+**Shortcuts (home):** keys **1–9** select tracks **1–9** in order; **0** selects the **10th** track. **Session chat:** **Enter** sends, **Shift+Enter** newline, **Ctrl/Cmd+Enter** also sends.
 
 ---
 

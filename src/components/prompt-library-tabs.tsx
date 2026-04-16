@@ -20,7 +20,17 @@ export type PromptTrackConfig = {
   label: string;
   description: string;
   prompts: PracticePrompt[];
-  accent: "js" | "design" | "node" | "ts" | "nest" | "next" | "arch" | "patterns";
+  accent:
+    | "js"
+    | "design"
+    | "node"
+    | "ts"
+    | "nest"
+    | "next"
+    | "mongo"
+    | "pg"
+    | "arch"
+    | "patterns";
 };
 
 function cardAccentClass(accent: PromptTrackConfig["accent"]): string {
@@ -37,6 +47,10 @@ function cardAccentClass(accent: PromptTrackConfig["accent"]): string {
       return "border-red-200/90 dark:border-red-900/45";
     case "next":
       return "border-zinc-300 dark:border-zinc-600";
+    case "mongo":
+      return "border-lime-200/90 dark:border-lime-900/45";
+    case "pg":
+      return "border-indigo-200/90 dark:border-indigo-900/45";
     case "arch":
       return "border-amber-200/90 dark:border-amber-900/45";
     case "patterns":
@@ -61,6 +75,10 @@ function trackSpotlightClass(accent: PromptTrackConfig["accent"]): string {
       return `overflow-hidden border border-red-400/65 bg-gradient-to-br from-red-50 via-orange-50/75 to-amber-50/35 dark:border-red-700/55 dark:from-red-950/45 dark:via-orange-950/28 dark:to-zinc-950`;
     case "next":
       return `overflow-hidden border border-zinc-300/90 bg-gradient-to-br from-white via-zinc-50/95 to-zinc-100/70 dark:border-zinc-600 dark:from-zinc-900/90 dark:via-zinc-950 dark:to-black`;
+    case "mongo":
+      return `overflow-hidden border border-lime-400/70 bg-gradient-to-br from-lime-50 via-emerald-50/85 to-green-50/45 dark:border-lime-600/55 dark:from-lime-950/45 dark:via-emerald-950/32 dark:to-zinc-950`;
+    case "pg":
+      return `overflow-hidden border border-indigo-400/70 bg-gradient-to-br from-indigo-50 via-blue-50/85 to-slate-50/45 dark:border-indigo-600/55 dark:from-indigo-950/48 dark:via-blue-950/32 dark:to-zinc-950`;
     case "arch":
       return `overflow-hidden border border-amber-400/70 bg-gradient-to-br from-amber-50 via-orange-50/80 to-yellow-50/45 dark:border-amber-600/55 dark:from-amber-950/48 dark:via-orange-950/32 dark:to-zinc-950`;
     case "patterns":
@@ -85,6 +103,10 @@ function trackDescChevronClass(accent: PromptTrackConfig["accent"]): string {
       return "border-red-500/50 bg-red-100/90 text-red-900 dark:border-red-700 dark:bg-red-950/70 dark:text-red-100";
     case "next":
       return "border-zinc-400/60 bg-zinc-200/90 text-zinc-900 dark:border-zinc-500 dark:bg-zinc-800/90 dark:text-zinc-100";
+    case "mongo":
+      return "border-lime-500/50 bg-lime-100/90 text-lime-950 dark:border-lime-600 dark:bg-lime-950/70 dark:text-lime-100";
+    case "pg":
+      return "border-indigo-500/50 bg-indigo-100/90 text-indigo-950 dark:border-indigo-600 dark:bg-indigo-950/70 dark:text-indigo-100";
     case "arch":
       return "border-amber-500/50 bg-amber-100/90 text-amber-950 dark:border-amber-600 dark:bg-amber-950/70 dark:text-amber-100";
     case "patterns":
@@ -196,15 +218,19 @@ export function PromptLibraryTabs({ tracks }: { tracks: PromptTrackConfig[] }) {
       if (ev.altKey || ev.metaKey || ev.ctrlKey) {
         return;
       }
-      if (!/^[1-8]$/.test(ev.key)) {
+      let idx: number;
+      if (ev.key === "0") {
+        idx = 9;
+      } else if (/^[1-9]$/.test(ev.key)) {
+        idx = Number.parseInt(ev.key, 10) - 1;
+      } else {
         return;
       }
-      const n = Number.parseInt(ev.key, 10) - 1;
-      if (n < 0 || n >= slugOrder.length) {
+      if (idx < 0 || idx >= slugOrder.length) {
         return;
       }
       ev.preventDefault();
-      setSlug(slugOrder[n]!);
+      setSlug(slugOrder[idx]!);
     }
     window.addEventListener("keydown", onGlobalKeyDown);
     return () => window.removeEventListener("keydown", onGlobalKeyDown);
@@ -291,9 +317,13 @@ export function PromptLibraryTabs({ tracks }: { tracks: PromptTrackConfig[] }) {
               </kbd>
               –
               <kbd className="rounded border border-slate-300 bg-white px-1.5 py-0.5 font-mono text-[11px] text-slate-800 shadow-sm dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100">
-                8
+                9
               </kbd>{" "}
-              while focus is{" "}
+              and{" "}
+              <kbd className="rounded border border-slate-300 bg-white px-1.5 py-0.5 font-mono text-[11px] text-slate-800 shadow-sm dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100">
+                0
+              </kbd>{" "}
+              (10th track) while focus is{" "}
               <strong className="font-semibold text-slate-900 dark:text-zinc-50">
                 not
               </strong>{" "}

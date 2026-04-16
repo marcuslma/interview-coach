@@ -52,6 +52,22 @@ export default async function HomePage() {
       accent: "next",
     },
     {
+      slug: "mongodb",
+      label: "MongoDB",
+      description:
+        "Document databases at interview depth: indexes and aggregation pipelines, replica sets and read preferences, sharding trade-offs, schema embedding vs referencing, and when transactions matter.",
+      prompts: listPromptsByCategory("mongodb"),
+      accent: "mongo",
+    },
+    {
+      slug: "postgresql",
+      label: "PostgreSQL",
+      description:
+        "The world's favorite relational engine: MVCC and isolation, indexes and EXPLAIN, locks and deadlocks, partitioning, and jsonb vs tables—practice articulating trade-offs clearly.",
+      prompts: listPromptsByCategory("postgresql"),
+      accent: "pg",
+    },
+    {
       slug: "system_design",
       label: "System design",
       description:
@@ -108,7 +124,7 @@ export default async function HomePage() {
           Interview Coach
         </h1>
         <p className="mt-3 w-full text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
-          Chat-only practice with an AI interviewer: JavaScript (default tab), TypeScript, Node.js, NestJS, Next.js, system design, software architecture, and design patterns.
+          Chat-only practice with an AI interviewer: JavaScript (default tab), TypeScript, Node.js, NestJS, Next.js, MongoDB, PostgreSQL, system design, software architecture, and design patterns.
           Configure{" "}
           <code className="rounded bg-zinc-200 px-1 font-mono text-xs dark:bg-zinc-800">
             LLM_PROVIDER

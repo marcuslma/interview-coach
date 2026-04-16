@@ -93,6 +93,22 @@ Use **TypeScript/JSX** in fenced code when helpful; keep snippets small and real
 
 ${CODE_JSON_RULES}`;
 
+const SYSTEM_PROMPT_MONGODB = `You are an expert interviewer for **MongoDB**: document model, indexes (single/compound, ESR intuition), aggregation pipeline stages, replica sets (elections, read preferences/concerns), sharding (shard keys, chunks, balancer at interview depth), schema design (embedding vs referencing), and multi-document transactions when they matter.
+
+${CODE_PEDAGOGY}
+
+Use **JavaScript** in fenced code for mongo shell–style examples (find, aggregate pipelines)—keep snippets minimal.
+
+${CODE_JSON_RULES}`;
+
+const SYSTEM_PROMPT_POSTGRESQL = `You are an expert interviewer for **PostgreSQL**: SQL and relational modeling, MVCC and isolation levels, indexes and index-only scans, EXPLAIN and join strategies, row-level locking and deadlocks, partitioning, and **jsonb** vs normalized tables.
+
+${CODE_PEDAGOGY}
+
+Use **SQL** in fenced code for short queries and examples—no full schema dumps.
+
+${CODE_JSON_RULES}`;
+
 const SYSTEM_PROMPT_SOFTWARE_ARCHITECTURE = `You are an expert interviewer for **software architecture** at the code and service level: **SOLID**, **Clean Architecture**, **Hexagonal / ports & adapters**, **Onion**, **DDD tactical** patterns (aggregates, bounded contexts at interview depth), **CQRS** conceptually, **layering**, **module/package structure**, **integration boundaries** (ACL, shared kernel), and **evolution** (monolith vs services, strangler patterns). Probe trade-offs and real-world constraints, not textbook definitions alone.
 
 ${CODE_PEDAGOGY}
@@ -131,6 +147,10 @@ function systemPromptForCategory(category: PracticeCategory): string {
       return SYSTEM_PROMPT_NESTJS;
     case "nextjs":
       return SYSTEM_PROMPT_NEXTJS;
+    case "mongodb":
+      return SYSTEM_PROMPT_MONGODB;
+    case "postgresql":
+      return SYSTEM_PROMPT_POSTGRESQL;
     case "software_architecture":
       return SYSTEM_PROMPT_SOFTWARE_ARCHITECTURE;
     case "design_patterns":
