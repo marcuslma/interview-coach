@@ -28,6 +28,14 @@ export default async function HomePage() {
       accent: "ts",
     },
     {
+      slug: "react",
+      label: "React",
+      description:
+        "React + Redux at interview depth: JSX and reconciliation, the hooks model (rules, stale closures, cleanup), the React.memo + useMemo + useCallback trio, React 18 concurrent features, forms with React Hook Form, server state with React Query / RTK Query, and Redux Toolkit.",
+      prompts: listPromptsByCategory("react"),
+      accent: "react",
+    },
+    {
       slug: "nodejs",
       label: "Node.js",
       description:
@@ -124,7 +132,7 @@ export default async function HomePage() {
           Interview Coach
         </h1>
         <p className="mt-3 w-full text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
-          Chat-only practice with an AI interviewer: JavaScript (default tab), TypeScript, Node.js, NestJS, Next.js, MongoDB, PostgreSQL, system design, software architecture, and design patterns.
+          Chat-only practice with an AI interviewer: JavaScript (default tab), TypeScript, React, Node.js, NestJS, Next.js, MongoDB, PostgreSQL, system design, software architecture, and design patterns.
           Configure{" "}
           <code className="rounded bg-zinc-200 px-1 font-mono text-xs dark:bg-zinc-800">
             LLM_PROVIDER

@@ -30,14 +30,14 @@ The codebase was built in a _vibe coding_ spirit (fast iteration, product and fl
 
 |                            |                                                                        |
 | :------------------------: | :--------------------------------------------------------------------- |
-|    ✨ **Ten tracks**     | Languages, databases, Node, Nest, Next, system design, architecture, patterns, and more |
+|    ✨ **Eleven tracks**  | Languages, React, databases, Node, Nest, Next, system design, architecture, patterns, and more |
 | 🗄️ **Persistent sessions** | SQLite stores your chats locally (or on the server you deploy to)      |
 |       📄 **Export**        | Markdown with context + rubric for later review                        |
 |    ⚡ **Low friction**     | Simple UI: tabs on the home page, chat in-session, history with delete |
 
 ---
 
-## 🗂️ The ten tracks
+## 🗂️ The eleven tracks
 
 On the home page, each tab is a **track** with ready-made scenarios (prompts live in code):
 
@@ -45,6 +45,7 @@ On the home page, each tab is a **track** with ready-made scenarios (prompts liv
 | :-------------------------- | :------------------------------------------------------------------------------------------------------------------ |
 | ⚡ **JavaScript**           | Language fundamentals: execution order, semantics, closures, Big-O, optimizations _(default tab when you open the app)_ |
 | 🛡️ **TypeScript**           | Types, narrowing, generics, utility types                                                                           |
+| ⚛️ **React**                | Hooks rules + stale closures, React.memo trio, React 18 concurrent, forms with RHF, React Query, Redux Toolkit       |
 | 🌱 **Node.js**              | Runtime, streams, modules, process, scaling patterns                                                                |
 | 🐱 **NestJS**               | DI, modules, guards, pipes, interceptors                                                                            |
 | 🚀 **Next.js**              | App Router, RSC, caching, route handlers, metadata                                                                  |
@@ -56,7 +57,7 @@ On the home page, each tab is a **track** with ready-made scenarios (prompts liv
 
 **Quick URLs:** with no query string, the **JavaScript** tab is selected. Examples:
 
-`?track=typescript` · `?track=nodejs` · `?track=nestjs` · `?track=nextjs` · `?track=mongodb` · `?track=postgresql` · `?track=system_design` · `?track=software_architecture` · `?track=design_patterns` · `?track=javascript`
+`?track=typescript` · `?track=react` · `?track=nodejs` · `?track=nestjs` · `?track=nextjs` · `?track=mongodb` · `?track=postgresql` · `?track=system_design` · `?track=software_architecture` · `?track=design_patterns` · `?track=javascript`
 
 ---
 
@@ -70,7 +71,7 @@ On the home page, each tab is a **track** with ready-made scenarios (prompts liv
 
 **Locale:** The interviewer defaults to your browser’s `Accept-Language` / `navigator.language` and mirrors the language of your latest message when you switch. Optional body field `preferredLanguage` on session and chat APIs overrides the header.
 
-**Shortcuts (home):** keys **1–9** select tracks **1–9** in order; **0** selects the **10th** track. **Session chat:** **Enter** sends, **Shift+Enter** newline, **Ctrl/Cmd+Enter** also sends.
+**Shortcuts (home):** keys **1–9** select tracks **1–9** in order; **0** selects the **10th** track; remaining tracks are reachable via the arrow keys or mouse. **Session chat:** **Enter** sends, **Shift+Enter** newline, **Ctrl/Cmd+Enter** also sends.
 
 ---
 

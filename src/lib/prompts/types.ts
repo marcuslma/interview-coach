@@ -5,6 +5,7 @@ export type PracticeCategory =
   | "typescript"
   | "nestjs"
   | "nextjs"
+  | "react"
   | "mongodb"
   | "postgresql"
   | "software_architecture"
@@ -20,6 +21,7 @@ export const TRACK_SLUGS: {
 }[] = [
   { slug: "javascript", category: "javascript" },
   { slug: "typescript", category: "typescript" },
+  { slug: "react", category: "react" },
   { slug: "nodejs", category: "nodejs" },
   { slug: "nestjs", category: "nestjs" },
   { slug: "nextjs", category: "nextjs" },
@@ -68,6 +70,7 @@ export const CATEGORY_LABEL: Record<PracticeCategory, string> = {
   typescript: "TypeScript",
   nestjs: "NestJS",
   nextjs: "Next.js",
+  react: "React",
   mongodb: "MongoDB",
   postgresql: "PostgreSQL",
   software_architecture: "Software architecture",

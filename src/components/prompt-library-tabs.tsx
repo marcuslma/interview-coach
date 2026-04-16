@@ -27,6 +27,7 @@ export type PromptTrackConfig = {
     | "ts"
     | "nest"
     | "next"
+    | "react"
     | "mongo"
     | "pg"
     | "arch"
@@ -47,6 +48,8 @@ function cardAccentClass(accent: PromptTrackConfig["accent"]): string {
       return "border-red-200/90 dark:border-red-900/45";
     case "next":
       return "border-zinc-300 dark:border-zinc-600";
+    case "react":
+      return "border-sky-200/90 dark:border-sky-900/45";
     case "mongo":
       return "border-lime-200/90 dark:border-lime-900/45";
     case "pg":
@@ -75,6 +78,8 @@ function trackSpotlightClass(accent: PromptTrackConfig["accent"]): string {
       return `overflow-hidden border border-red-400/65 bg-gradient-to-br from-red-50 via-orange-50/75 to-amber-50/35 dark:border-red-700/55 dark:from-red-950/45 dark:via-orange-950/28 dark:to-zinc-950`;
     case "next":
       return `overflow-hidden border border-zinc-300/90 bg-gradient-to-br from-white via-zinc-50/95 to-zinc-100/70 dark:border-zinc-600 dark:from-zinc-900/90 dark:via-zinc-950 dark:to-black`;
+    case "react":
+      return `overflow-hidden border border-sky-400/70 bg-gradient-to-br from-sky-50 via-cyan-50/85 to-blue-50/45 dark:border-sky-600/55 dark:from-sky-950/48 dark:via-cyan-950/32 dark:to-zinc-950`;
     case "mongo":
       return `overflow-hidden border border-lime-400/70 bg-gradient-to-br from-lime-50 via-emerald-50/85 to-green-50/45 dark:border-lime-600/55 dark:from-lime-950/45 dark:via-emerald-950/32 dark:to-zinc-950`;
     case "pg":
@@ -103,6 +108,8 @@ function trackDescChevronClass(accent: PromptTrackConfig["accent"]): string {
       return "border-red-500/50 bg-red-100/90 text-red-900 dark:border-red-700 dark:bg-red-950/70 dark:text-red-100";
     case "next":
       return "border-zinc-400/60 bg-zinc-200/90 text-zinc-900 dark:border-zinc-500 dark:bg-zinc-800/90 dark:text-zinc-100";
+    case "react":
+      return "border-sky-500/50 bg-sky-100/90 text-sky-950 dark:border-sky-600 dark:bg-sky-950/70 dark:text-sky-100";
     case "mongo":
       return "border-lime-500/50 bg-lime-100/90 text-lime-950 dark:border-lime-600 dark:bg-lime-950/70 dark:text-lime-100";
     case "pg":

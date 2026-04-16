@@ -5,6 +5,7 @@ import { NESTJS_PROMPTS } from "./nestjs-seed";
 import { NEXTJS_PROMPTS } from "./nextjs-seed";
 import { NODEJS_PROMPTS } from "./nodejs-seed";
 import { POSTGRESQL_PROMPTS } from "./postgresql-seed";
+import { REACT_PROMPTS } from "./react-seed";
 import { SOFTWARE_ARCHITECTURE_PROMPTS } from "./software-architecture-seed";
 import { SYSTEM_DESIGN_PROMPTS } from "./system-design-seed";
 import type { PracticeCategory, PracticePrompt } from "./types";
@@ -19,6 +20,7 @@ const ALL_PROMPTS: PracticePrompt[] = [
   ...DESIGN_PATTERNS_PROMPTS,
   ...NESTJS_PROMPTS,
   ...NEXTJS_PROMPTS,
+  ...REACT_PROMPTS,
   ...MONGODB_PROMPTS,
   ...POSTGRESQL_PROMPTS,
 ];
