@@ -49,5 +49,6 @@ next-env.d.ts
 CONTRIBUTING.md
 
 # Local design/spec artifacts (superpowers specs/plans; do not commit)
+/docs/references/
 /docs/superpowers/
 /docs/specs/

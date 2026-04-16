@@ -15,11 +15,11 @@
     "db:reset": "node scripts/reset-db.mjs && drizzle-kit push"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.89.0",
+    "@anthropic-ai/sdk": "^0.90.0",
     "@google/generative-ai": "^0.24.1",
     "better-sqlite3": "^12.9.0",
     "drizzle-orm": "^0.45.2",
-    "next": "16.2.3",
+    "next": "16.2.4",
     "openai": "^6.34.0",
     "react": "19.2.5",
     "react-dom": "19.2.5",
@@ -37,7 +37,7 @@
     "@types/uuid": "^11.0.0",
     "drizzle-kit": "^0.31.10",
     "eslint": "^9",
-    "eslint-config-next": "16.2.3",
+    "eslint-config-next": "16.2.4",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.4"
