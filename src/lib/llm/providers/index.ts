@@ -10,30 +10,12 @@ export type {
   LlmProviderId,
 } from "./types";
 
-export { getEnvApiKeyForProvider } from "./env-keys";
-
-export function getLlmProviderId(): LlmProviderId {
-  const raw = (process.env.LLM_PROVIDER ?? "openai").toLowerCase().trim();
-  if (raw === "anthropic" || raw === "google" || raw === "openai") {
-    return raw;
-  }
-  return "openai";
-}
-
-export function getInterviewModelForProvider(id: LlmProviderId): string {
-  switch (id) {
-    case "openai":
-      return process.env.OPENAI_MODEL ?? "gpt-4o-mini";
-    case "anthropic":
-      return process.env.ANTHROPIC_MODEL ?? "claude-sonnet-4-20250514";
-    case "google":
-      return process.env.GOOGLE_MODEL ?? "gemini-2.0-flash";
-    default: {
-      const _x: never = id;
-      return _x;
-    }
-  }
-}
+/** Default model for each provider, exposed so clients can pre-fill the UI. */
+export const DEFAULT_MODEL_BY_PROVIDER: Record<LlmProviderId, string> = {
+  openai: "gpt-4o-mini",
+  anthropic: "claude-sonnet-4-20250514",
+  google: "gemini-2.0-flash",
+};
 
 export function getLlmProviderById(id: LlmProviderId): InterviewLlmProvider {
   switch (id) {
@@ -48,8 +30,4 @@ export function getLlmProviderById(id: LlmProviderId): InterviewLlmProvider {
       return _x;
     }
   }
-}
-
-export function getLlmProvider(): InterviewLlmProvider {
-  return getLlmProviderById(getLlmProviderId());
 }

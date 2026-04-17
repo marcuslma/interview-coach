@@ -4,12 +4,13 @@ import { SettingsForm } from "./settings-form";
 
 export const metadata: Metadata = {
   title: "Settings — Interview Coach",
-  description: "Configure LLM provider and optional encrypted API key storage.",
+  description:
+    "Configure the LLM provider and encrypt your API key in this browser.",
 };
 
 export default function SettingsPage() {
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-8 px-4 py-10">
+    <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-8 px-4 py-10">
       <div>
         <Link
           href="/"
@@ -21,12 +22,10 @@ export default function SettingsPage() {
           LLM settings
         </h1>
         <p className="mt-2 max-w-2xl text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
-          Override provider and model for this installation. To persist an API
-          key in SQLite, set a long random{" "}
-          <code className="rounded bg-zinc-200 px-1 font-mono text-xs dark:bg-zinc-800">
-            SETTINGS_ENCRYPTION_KEY
-          </code>{" "}
-          in the server environment (used only to encrypt secrets at rest).
+          Pick an LLM provider and paste your own API key. The key is encrypted
+          in this browser using a passphrase you choose (AES-256-GCM +
+          PBKDF2-SHA256, 200k iterations). Nothing is stored on our servers; the
+          passphrase never leaves this device.
         </p>
       </div>
       <SettingsForm />

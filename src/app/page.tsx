@@ -1,15 +1,10 @@
 import { Suspense } from "react";
 import { listPromptsByCategory } from "@/lib/prompts";
-import { getPromptById } from "@/lib/prompts";
 import { PromptLibraryTabs } from "@/components/prompt-library-tabs";
 import type { PromptTrackConfig } from "@/components/prompt-library-tabs";
 import { RecentSessions } from "@/components/recent-sessions";
-import { listSessions } from "@/lib/sessions/service";
-import type { PracticeCategory } from "@/lib/prompts/types";
 
-export const dynamic = "force-dynamic";
-
-export default async function HomePage() {
+export default function HomePage() {
   const tracks: PromptTrackConfig[] = [
     {
       slug: "javascript",
@@ -77,7 +72,7 @@ export default async function HomePage() {
     },
     {
       slug: "system_design",
-      label: "System design",
+      label: "System Design",
       description:
         "Large-scale systems: clarify requirements, sketch capacity, APIs and data, consistency, reliability, and trade-offs—whiteboard style, without diving into a single framework.",
       prompts: listPromptsByCategory("system_design"),
@@ -85,7 +80,7 @@ export default async function HomePage() {
     },
     {
       slug: "software_architecture",
-      label: "Software architecture",
+      label: "Software Architecture",
       description:
         "Code-level architecture: SOLID, Clean and Hexagonal boundaries, DDD building blocks, CQRS in principle, packaging, integration styles, and how to evolve a codebase safely.",
       prompts: listPromptsByCategory("software_architecture"),
@@ -93,34 +88,13 @@ export default async function HomePage() {
     },
     {
       slug: "design_patterns",
-      label: "Design patterns",
+      label: "Design Patterns",
       description:
         "Classic GoF and enterprise patterns—know when they pay off and when they add noise. Expect small TypeScript sketches, comparisons (Adapter vs Decorator), and honest trade-offs.",
       prompts: listPromptsByCategory("design_patterns"),
       accent: "patterns",
     },
   ];
-
-  let recent: {
-    id: string;
-    title: string;
-    updatedAt: string;
-    category: PracticeCategory;
-  }[] = [];
-  try {
-    const rows = await listSessions();
-    recent = rows.slice(0, 12).map((s) => {
-      const p = getPromptById(s.promptId);
-      return {
-        id: s.id,
-        title: s.title,
-        updatedAt: s.updatedAt.toISOString(),
-        category: p?.category ?? "javascript",
-      };
-    });
-  } catch {
-    recent = [];
-  }
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10 px-4 py-10">
@@ -133,15 +107,15 @@ export default async function HomePage() {
         </h1>
         <p className="mt-3 w-full text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
           Chat-only practice with an AI interviewer: JavaScript (default tab), TypeScript, React, Node.js, NestJS, Next.js, MongoDB, PostgreSQL, system design, software architecture, and design patterns.
-          Configure{" "}
-          <code className="rounded bg-zinc-200 px-1 font-mono text-xs dark:bg-zinc-800">
-            LLM_PROVIDER
-          </code>{" "}
-          and the matching API key in{" "}
-          <code className="rounded bg-zinc-200 px-1 font-mono text-xs dark:bg-zinc-800">
-            .env
-          </code>{" "}
-          locally. Deep links:{" "}
+          Provide your own LLM API key on the{" "}
+          <a
+            href="/settings"
+            className="font-medium text-emerald-700 underline-offset-2 hover:underline dark:text-emerald-400"
+          >
+            Settings
+          </a>{" "}
+          page — it is encrypted with a passphrase you choose and stored only in
+          this browser. Deep links:{" "}
           <code className="rounded bg-zinc-200 px-1 font-mono text-xs dark:bg-zinc-800">
             ?track=system_design
           </code>
@@ -153,7 +127,7 @@ export default async function HomePage() {
         </p>
       </div>
 
-      {recent.length > 0 && <RecentSessions initial={recent} />}
+      <RecentSessions />
 
       <section>
         <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">

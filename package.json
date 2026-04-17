@@ -8,17 +8,11 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "test:watch": "vitest",
-    "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio",
-    "db:clear": "node scripts/clear-db.mjs",
-    "db:reset": "node scripts/reset-db.mjs && drizzle-kit push"
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.90.0",
     "@google/generative-ai": "^0.24.1",
-    "better-sqlite3": "^12.9.0",
-    "drizzle-orm": "^0.45.2",
     "next": "16.2.4",
     "openai": "^6.34.0",
     "react": "19.2.5",
@@ -30,12 +24,10 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^25",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/uuid": "^11.0.0",
-    "drizzle-kit": "^0.31.10",
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
     "tailwindcss": "^4",

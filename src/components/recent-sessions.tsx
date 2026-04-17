@@ -1,40 +1,55 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { PracticeCategory } from "@/lib/prompts/types";
 import { CATEGORY_LABEL } from "@/lib/prompts/types";
+import { getPromptById } from "@/lib/prompts";
+import {
+  deleteSession,
+  listSessions,
+  subscribe,
+  type StoredSession,
+} from "@/lib/storage/client-store";
 
-export type RecentSessionRow = {
+type RecentSessionRow = {
   id: string;
   title: string;
   updatedAt: string;
   category: PracticeCategory;
 };
 
-export function RecentSessions({ initial }: { initial: RecentSessionRow[] }) {
-  const router = useRouter();
-  const [rows, setRows] = useState(initial);
+function toRow(s: StoredSession): RecentSessionRow {
+  const p = getPromptById(s.promptId);
+  return {
+    id: s.id,
+    title: s.title,
+    updatedAt: s.updatedAt,
+    category: p?.category ?? "javascript",
+  };
+}
 
-  async function remove(id: string) {
+export function RecentSessions() {
+  const [rows, setRows] = useState<RecentSessionRow[] | null>(null);
+
+  useEffect(() => {
+    const hydrate = () => {
+      setRows(listSessions().slice(0, 12).map(toRow));
+    };
+    hydrate();
+    return subscribe(hydrate);
+  }, []);
+
+  function remove(id: string) {
     if (
       !globalThis.confirm("Delete this session? This cannot be undone.")
     ) {
       return;
     }
-
-    const res = await fetch(`/api/sessions/${id}`, { method: "DELETE" });
-
-    if (!res.ok) {
-      return;
-    }
-
-    setRows((r) => r.filter((x) => x.id !== id));
-    router.refresh();
+    deleteSession(id);
   }
 
-  if (rows.length === 0) {
+  if (!rows || rows.length === 0) {
     return null;
   }
 
@@ -65,7 +80,7 @@ export function RecentSessions({ initial }: { initial: RecentSessionRow[] }) {
             </span>
             <button
               type="button"
-              onClick={() => void remove(s.id)}
+              onClick={() => remove(s.id)}
               className="shrink-0 rounded-md px-2 py-1.5 text-xs font-medium text-red-700 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-950/40"
               aria-label={`Delete session ${s.title}`}
             >

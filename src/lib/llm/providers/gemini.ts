@@ -1,6 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import type { Content } from "@google/generative-ai";
-import { getEnvApiKeyForProvider } from "./env-keys";
 import type {
   CompleteJsonInterviewParams,
   InterviewLlmProvider,
@@ -10,7 +9,10 @@ export function createGeminiProvider(): InterviewLlmProvider {
   return {
     id: "google",
     async completeJsonInterview(params: CompleteJsonInterviewParams) {
-      const apiKey = params.apiKey?.trim() || getEnvApiKeyForProvider("google");
+      const apiKey = params.apiKey?.trim();
+      if (!apiKey) {
+        throw new Error("Missing Google API key");
+      }
       const genAI = new GoogleGenerativeAI(apiKey);
       const systemParts: string[] = [];
       const contents: Content[] = [];

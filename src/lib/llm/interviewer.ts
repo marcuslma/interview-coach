@@ -4,8 +4,11 @@ import {
   type PracticePrompt,
 } from "@/lib/prompts/types";
 import { buildLanguageInstruction } from "@/lib/locale";
-import { resolveInterviewLlmConfig } from "@/lib/settings/interview-llm-config";
-import { getLlmProviderById, type InterviewChatMessage } from "./providers";
+import {
+  getLlmProviderById,
+  type InterviewChatMessage,
+  type LlmProviderId,
+} from "./providers";
 import { type InterviewTurn } from "./schema";
 import { parseInterviewTurnJson } from "./parse-turn";
 
@@ -256,13 +259,16 @@ function systemPromptForCategory(category: PracticeCategory): string {
   }
 }
 
-/** Resolved model (database overrides env when configured). */
-export async function getInterviewModel(): Promise<string> {
-  const config = await resolveInterviewLlmConfig();
-  return config.model;
-}
-
 export type HistoryMsg = { role: "user" | "assistant"; content: string };
+
+export type InterviewTurnOptions = {
+  bootstrap?: boolean;
+  localeHint?: string;
+  /** Required: client provides the LLM config per request (BYOK). */
+  providerId: LlmProviderId;
+  model: string;
+  apiKey: string;
+};
 
 function buildDesignContext(prompt: PracticePrompt): string {
   return [
@@ -288,9 +294,9 @@ function buildCodeContext(prompt: PracticePrompt): string {
 export async function runInterviewTurn(
   prompt: PracticePrompt,
   history: HistoryMsg[],
-  options?: { bootstrap?: boolean; localeHint?: string },
+  options: InterviewTurnOptions,
 ): Promise<InterviewTurn> {
-  const { providerId, model, apiKey } = await resolveInterviewLlmConfig();
+  const { providerId, model, apiKey } = options;
   const provider = getLlmProviderById(providerId);
 
   const isDesign = prompt.category === "system_design";

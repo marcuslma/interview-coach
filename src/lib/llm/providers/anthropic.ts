@@ -1,6 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { MessageParam } from "@anthropic-ai/sdk/resources/messages";
-import { getEnvApiKeyForProvider } from "./env-keys";
 import type {
   CompleteJsonInterviewParams,
   InterviewLlmProvider,
@@ -28,7 +27,10 @@ export function createAnthropicProvider(): InterviewLlmProvider {
   return {
     id: "anthropic",
     async completeJsonInterview(params: CompleteJsonInterviewParams) {
-      const apiKey = params.apiKey?.trim() || getEnvApiKeyForProvider("anthropic");
+      const apiKey = params.apiKey?.trim();
+      if (!apiKey) {
+        throw new Error("Missing Anthropic API key");
+      }
       const client = new Anthropic({ apiKey });
       const { system, messages } = toAnthropicMessages(params.messages);
       const response = await client.messages.create({

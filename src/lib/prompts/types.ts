@@ -65,7 +65,7 @@ export type DesignPrompt = PracticePrompt;
 
 export const CATEGORY_LABEL: Record<PracticeCategory, string> = {
   javascript: "JavaScript",
-  system_design: "System design",
+  system_design: "System Design",
   nodejs: "Node.js",
   typescript: "TypeScript",
   nestjs: "NestJS",
@@ -73,6 +73,6 @@ export const CATEGORY_LABEL: Record<PracticeCategory, string> = {
   react: "React",
   mongodb: "MongoDB",
   postgresql: "PostgreSQL",
-  software_architecture: "Software architecture",
-  design_patterns: "Design patterns",
+  software_architecture: "Software Architecture",
+  design_patterns: "Design Patterns",
 };

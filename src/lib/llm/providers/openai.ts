@@ -1,5 +1,4 @@
 import OpenAI from "openai";
-import { getEnvApiKeyForProvider } from "./env-keys";
 import type {
   CompleteJsonInterviewParams,
   InterviewLlmProvider,
@@ -9,7 +8,10 @@ export function createOpenAiProvider(): InterviewLlmProvider {
   return {
     id: "openai",
     async completeJsonInterview(params: CompleteJsonInterviewParams) {
-      const apiKey = params.apiKey?.trim() || getEnvApiKeyForProvider("openai");
+      const apiKey = params.apiKey?.trim();
+      if (!apiKey) {
+        throw new Error("Missing OpenAI API key");
+      }
       const openai = new OpenAI({ apiKey });
       const completion = await openai.chat.completions.create({
         model: params.model,

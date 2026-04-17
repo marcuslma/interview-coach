@@ -12,156 +12,236 @@ import {
 } from "react";
 import { ChatMessage } from "@/components/chat-message";
 import { RubricPanel } from "@/components/rubric-panel";
+import { buildSessionMarkdown } from "@/lib/export/markdown";
+import { DEFAULT_MODEL_BY_PROVIDER } from "@/lib/llm/providers";
 import type { Rubric } from "@/lib/llm/schema";
-import { CATEGORY_LABEL, type PracticeCategory } from "@/lib/prompts/types";
+import { getPromptById } from "@/lib/prompts";
+import { CATEGORY_LABEL, type PracticePrompt } from "@/lib/prompts/types";
+import { useVault } from "@/lib/settings/vault-context";
+import { UnlockDialog } from "@/lib/settings/vault-gate";
+import {
+  appendMessage,
+  deleteSession as storeDeleteSession,
+  getSession,
+  subscribe,
+  type StoredMessage,
+  type StoredSession,
+} from "@/lib/storage/client-store";
 
-type ApiMessage = {
-  id: string;
-  role: string;
-  content: string;
-  metadataJson: string | null;
-  createdAt: string;
+type ChatApiResponse = {
+  message: string;
+  phase: string;
+  sessionComplete: boolean;
+  rubric: Rubric | null;
+  error?: string;
 };
 
-type SessionPayload = {
-  session: {
-    id: string;
-    promptId: string;
-    title: string;
-  };
-  prompt: {
-    category: PracticeCategory;
-    candidateBrief: string;
-    summary: string;
-    primaryLanguage: string | null;
-  } | null;
-  messages: ApiMessage[];
+type AssistantMeta = {
+  phase: string;
+  session_complete: boolean;
+  rubric: Rubric | null;
 };
+
+function toHistory(messages: StoredMessage[]) {
+  const out: { role: "user" | "assistant"; content: string }[] = [];
+  for (const m of messages) {
+    if (m.role === "user" || m.role === "assistant") {
+      out.push({ role: m.role, content: m.content });
+    }
+  }
+  return out;
+}
+
+function parseAssistantMeta(raw: string | null): AssistantMeta | null {
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as AssistantMeta;
+  } catch {
+    return null;
+  }
+}
+
+function findLatestRubric(messages: StoredMessage[]): Rubric | null {
+  for (let i = messages.length - 1; i >= 0; i--) {
+    const m = messages[i];
+    if (m.role !== "assistant") continue;
+    const meta = parseAssistantMeta(m.metadataJson);
+    if (meta?.session_complete && meta.rubric) {
+      return meta.rubric;
+    }
+  }
+  return null;
+}
 
 export function SessionWorkspace({ sessionId }: { sessionId: string }) {
   const router = useRouter();
-  const [data, setData] = useState<SessionPayload | null>(null);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const vault = useVault();
+  const [session, setSession] = useState<StoredSession | null | undefined>(
+    undefined,
+  );
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [chatError, setChatError] = useState<string | null>(null);
-  const [deleting, setDeleting] = useState(false);
+  const [unlockOpen, setUnlockOpen] = useState(false);
+  const bootstrapStartedRef = useRef(false);
+  const pendingActionRef = useRef<null | "send" | "bootstrap">(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const composerFocusedOnce = useRef(false);
 
-  const refresh = useCallback(async () => {
-    const res = await fetch(`/api/sessions/${sessionId}`);
-    if (!res.ok) {
-      setLoadError("Could not load session");
-      return;
-    }
-    const json = (await res.json()) as SessionPayload;
-    setData(json);
+  const prompt: PracticePrompt | null = useMemo(
+    () => (session ? (getPromptById(session.promptId) ?? null) : null),
+    [session],
+  );
+
+  const rubric = useMemo(
+    () => (session ? findLatestRubric(session.messages) : null),
+    [session],
+  );
+  const sessionComplete = rubric != null;
+
+  useEffect(() => {
+    const hydrate = () => setSession(getSession(sessionId));
+    hydrate();
+    return subscribe(hydrate);
   }, [sessionId]);
 
   useEffect(() => {
-    void refresh();
-  }, [refresh]);
-
-  useEffect(() => {
-    if (data?.messages.length) {
+    if (session?.messages?.length) {
       bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }
-  }, [data?.messages.length]);
-
-  const rubric: Rubric | null = useMemo(() => {
-    if (!data?.messages?.length) {
-      return null;
-    }
-
-    for (let i = data.messages.length - 1; i >= 0; i--) {
-      const m = data.messages[i];
-
-      if (m.role !== "assistant" || !m.metadataJson) {
-        continue;
-      }
-
-      try {
-        const meta = JSON.parse(m.metadataJson) as {
-          session_complete?: boolean;
-          rubric?: Rubric;
-        };
-
-        if (meta.session_complete && meta.rubric) {
-          return meta.rubric;
-        }
-      } catch {
-        return null;
-      }
-    }
-
-    return null;
-  }, [data?.messages]);
-
-  const sessionComplete = useMemo(() => rubric != null, [rubric]);
+  }, [session?.messages?.length]);
 
   useEffect(() => {
-    if (data && !sessionComplete && !composerFocusedOnce.current) {
+    if (session && !sessionComplete && !composerFocusedOnce.current) {
       textareaRef.current?.focus();
       composerFocusedOnce.current = true;
     }
-  }, [data, sessionComplete]);
+  }, [session, sessionComplete]);
 
-  async function send() {
-    const text = input.trim();
+  function ensureUnlocked(intent: "send" | "bootstrap"): boolean {
+    if (vault.status === "unlocked") return true;
+    pendingActionRef.current = intent;
+    setUnlockOpen(true);
+    return false;
+  }
 
-    if (!text || sending || sessionComplete) {
-      return;
-    }
+  const callChatApi = useCallback(
+    async (history: { role: "user" | "assistant"; content: string }[], bootstrap: boolean) => {
+      const apiKey = vault.getApiKey();
+      if (!apiKey) {
+        throw new Error("Vault is locked");
+      }
+      const provider = vault.provider;
+      const model = vault.model.trim() || DEFAULT_MODEL_BY_PROVIDER[provider];
 
-    setSending(true);
-    setChatError(null);
-    setInput("");
-
-    const optimistic: ApiMessage = {
-      id: `local-${Date.now()}`,
-      role: "user",
-      content: text,
-      metadataJson: null,
-      createdAt: new Date().toISOString(),
-    };
-
-    setData((prev) =>
-      prev ? { ...prev, messages: [...prev.messages, optimistic] } : prev,
-    );
-
-    try {
       const res = await fetch("/api/chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-llm-api-key": apiKey,
+        },
         body: JSON.stringify({
-          sessionId,
-          userMessage: text,
+          promptId: session?.promptId,
+          history,
+          bootstrap,
+          provider,
+          model,
           preferredLanguage:
             typeof navigator !== "undefined" ? navigator.language : undefined,
         }),
       });
 
-      const json = await res.json();
-
+      const json = (await res.json()) as ChatApiResponse;
       if (!res.ok) {
-        throw new Error(json.error ?? "Request failed");
+        throw new Error(json.error ?? `Request failed (${res.status})`);
       }
+      return json;
+    },
+    [session?.promptId, vault],
+  );
 
-      await refresh();
+  const runBootstrap = useCallback(async () => {
+    if (!session) return;
+    setSending(true);
+    setChatError(null);
+    try {
+      const resp = await callChatApi([], true);
+      const meta: AssistantMeta = {
+        phase: resp.phase,
+        session_complete: resp.sessionComplete,
+        rubric: resp.rubric,
+      };
+      appendMessage(sessionId, {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        content: resp.message,
+        metadataJson: JSON.stringify(meta),
+      });
+    } catch (e) {
+      setChatError(e instanceof Error ? e.message : "Failed to start session");
+    } finally {
+      setSending(false);
+    }
+  }, [callChatApi, session, sessionId]);
+
+  // Auto-bootstrap once for a newly created session with zero messages.
+  useEffect(() => {
+    if (!session) return;
+    if (session.messages.length > 0) return;
+    if (bootstrapStartedRef.current) return;
+    bootstrapStartedRef.current = true;
+    if (!ensureUnlocked("bootstrap")) {
+      // Allow re-triggering after cancel → unlock via header.
+      bootstrapStartedRef.current = false;
+      return;
+    }
+    void runBootstrap();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session, vault.status]);
+
+  async function send() {
+    const text = input.trim();
+    if (!text || sending || sessionComplete || !session) return;
+    if (!ensureUnlocked("send")) return;
+
+    setSending(true);
+    setChatError(null);
+    setInput("");
+
+    const userMessageId = crypto.randomUUID();
+    appendMessage(sessionId, {
+      id: userMessageId,
+      role: "user",
+      content: text,
+    });
+
+    try {
+      const history = [
+        ...toHistory(session.messages),
+        { role: "user" as const, content: text },
+      ];
+      const resp = await callChatApi(history, false);
+      const meta: AssistantMeta = {
+        phase: resp.phase,
+        session_complete: resp.sessionComplete,
+        rubric: resp.rubric,
+      };
+      appendMessage(sessionId, {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        content: resp.message,
+        metadataJson: JSON.stringify(meta),
+      });
     } catch (e) {
       setChatError(e instanceof Error ? e.message : "Failed to send");
-      await refresh();
     } finally {
       setSending(false);
     }
   }
 
   function handleComposerKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
-    if (sessionComplete || sending) {
-      return;
-    }
+    if (sessionComplete || sending) return;
     if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
       e.preventDefault();
       void send();
@@ -173,23 +253,30 @@ export function SessionWorkspace({ sessionId }: { sessionId: string }) {
     }
   }
 
-  async function downloadExport() {
-    const res = await fetch(`/api/sessions/${sessionId}/export`);
-
-    if (!res.ok) {
-      return;
-    }
-
-    const blob = await res.blob();
+  function downloadExport() {
+    if (!session) return;
+    const transcript = session.messages
+      .filter((m) => m.role === "user" || m.role === "assistant")
+      .map((m) => ({ role: m.role, content: m.content }));
+    const md = buildSessionMarkdown({
+      title: session.title,
+      promptSummary: prompt?.summary ?? "",
+      createdAt: new Date(session.createdAt),
+      transcript,
+      rubric,
+    });
+    const blob = new Blob([md], { type: "text/markdown;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
     a.download = `session-${sessionId.slice(0, 8)}.md`;
+    document.body.appendChild(a);
     a.click();
+    a.remove();
     URL.revokeObjectURL(url);
   }
 
-  async function deleteSession() {
+  function handleDelete() {
     if (
       !globalThis.confirm(
         "Delete this session permanently? This cannot be undone.",
@@ -197,34 +284,22 @@ export function SessionWorkspace({ sessionId }: { sessionId: string }) {
     ) {
       return;
     }
- 
-    setDeleting(true);
- 
-    try {
-      const res = await fetch(`/api/sessions/${sessionId}`, {
-        method: "DELETE",
-      });
+    storeDeleteSession(sessionId);
+    router.push("/");
+  }
 
-      if (!res.ok) {
-        return;
-      }
-
-      router.push("/");
-      router.refresh();
-    } finally {
-      setDeleting(false);
+  function onUnlocked() {
+    const intent = pendingActionRef.current;
+    pendingActionRef.current = null;
+    if (intent === "bootstrap") {
+      void runBootstrap();
+    } else if (intent === "send") {
+      const text = input.trim();
+      if (text) void send();
     }
   }
 
-  if (loadError) {
-    return (
-      <div className="rounded-md border border-red-300 bg-red-50 p-4 text-red-900 dark:border-red-800 dark:bg-red-950/40 dark:text-red-100">
-        {loadError}
-      </div>
-    );
-  }
-
-  if (!data) {
+  if (session === undefined) {
     return (
       <div className="text-sm text-zinc-500 dark:text-zinc-400">
         Loading session…
@@ -232,9 +307,18 @@ export function SessionWorkspace({ sessionId }: { sessionId: string }) {
     );
   }
 
-  const trackLabel = data.prompt
-    ? CATEGORY_LABEL[data.prompt.category]
-    : "Session";
+  if (session === null) {
+    return (
+      <div className="rounded-md border border-red-300 bg-red-50 p-4 text-red-900 dark:border-red-800 dark:bg-red-950/40 dark:text-red-100">
+        Session not found in this browser.
+      </div>
+    );
+  }
+
+  const trackLabel = prompt ? CATEGORY_LABEL[prompt.category] : "Session";
+  const messages = session.messages.filter(
+    (m) => m.role === "user" || m.role === "assistant",
+  );
 
   return (
     <div className="flex flex-col gap-6">
@@ -242,36 +326,35 @@ export function SessionWorkspace({ sessionId }: { sessionId: string }) {
         <div>
           <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
             {trackLabel}
-            {data.prompt?.primaryLanguage && (
+            {prompt?.primaryLanguage && (
               <span className="ml-2 rounded-full bg-zinc-200 px-2 py-0.5 font-mono text-[10px] font-normal text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200">
-                {data.prompt.primaryLanguage}
+                {prompt.primaryLanguage}
               </span>
             )}
           </p>
           <h1 className="mt-1 text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-            {data.session.title}
+            {session.title}
           </h1>
-          {data.prompt && (
+          {prompt && (
             <p className="mt-2 max-w-3xl text-sm text-zinc-600 dark:text-zinc-300">
-              {data.prompt.candidateBrief}
+              {prompt.candidateBrief}
             </p>
           )}
         </div>
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
-            onClick={() => void downloadExport()}
+            onClick={downloadExport}
             className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm font-medium text-zinc-900 shadow-sm hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:hover:bg-zinc-800"
           >
             Export Markdown
           </button>
           <button
             type="button"
-            onClick={() => void deleteSession()}
-            disabled={deleting}
-            className="rounded-md border border-red-300 bg-white px-3 py-2 text-sm font-medium text-red-800 hover:bg-red-50 disabled:opacity-50 dark:border-red-900 dark:bg-red-950/30 dark:text-red-200 dark:hover:bg-red-950/50"
+            onClick={handleDelete}
+            className="rounded-md border border-red-300 bg-white px-3 py-2 text-sm font-medium text-red-800 hover:bg-red-50 dark:border-red-900 dark:bg-red-950/30 dark:text-red-200 dark:hover:bg-red-950/50"
           >
-            {deleting ? "Deleting…" : "Delete session"}
+            Delete session
           </button>
           <Link
             href="/"
@@ -296,13 +379,14 @@ export function SessionWorkspace({ sessionId }: { sessionId: string }) {
           </p>
         </div>
         <div className="flex max-h-[min(70vh,720px)] flex-1 flex-col gap-3 overflow-y-auto px-4 py-4">
-          {data.messages
-            .filter((m) => m.role === "user" || m.role === "assistant")
-            .map((m) => (
-              <ChatMessage key={m.id} role={m.role as "user" | "assistant"}>
-                {m.content}
-              </ChatMessage>
-            ))}
+          {messages.map((m) => (
+            <ChatMessage key={m.id} role={m.role as "user" | "assistant"}>
+              {m.content}
+            </ChatMessage>
+          ))}
+          {sending && messages.length === 0 && (
+            <p className="text-sm text-zinc-500">Starting interview…</p>
+          )}
           <div ref={bottomRef} />
         </div>
         {chatError && (
@@ -337,14 +421,24 @@ export function SessionWorkspace({ sessionId }: { sessionId: string }) {
           </div>
           <p className="mt-2 text-[11px] leading-snug text-zinc-500 dark:text-zinc-400">
             <span className="hidden sm:inline">
-              Enter to send · Shift+Enter new line · Ctrl or ⌘ + Enter to send
-              ·{" "}
+              Enter to send · Shift+Enter new line · Ctrl or ⌘ + Enter to send ·{" "}
             </span>
-            <span className="sm:hidden">Enter sends · Shift+Enter for newline · </span>
+            <span className="sm:hidden">
+              Enter sends · Shift+Enter for newline ·{" "}
+            </span>
             Focus returns here after load.
           </p>
         </div>
       </section>
+
+      <UnlockDialog
+        open={unlockOpen}
+        onClose={() => {
+          setUnlockOpen(false);
+          pendingActionRef.current = null;
+        }}
+        onUnlocked={onUnlocked}
+      />
     </div>
   );
 }
