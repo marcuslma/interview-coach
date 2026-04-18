@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrowDown, ArrowLeft, Download, Send, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -12,6 +13,7 @@ import {
 } from "react";
 import { ChatMessage } from "@/components/chat-message";
 import { RubricPanel } from "@/components/rubric-panel";
+import { Banner, Button } from "@/components/ui";
 import { buildSessionMarkdown } from "@/lib/export/markdown";
 import { DEFAULT_MODEL_BY_PROVIDER } from "@/lib/llm/providers";
 import type { Rubric } from "@/lib/llm/schema";
@@ -61,6 +63,42 @@ function parseAssistantMeta(raw: string | null): AssistantMeta | null {
   }
 }
 
+function SessionSkeleton() {
+  return (
+    <div
+      className="flex flex-col gap-6"
+      role="status"
+      aria-label="Loading session"
+    >
+      <div className="space-y-3 border-b border-zinc-200/80 pb-4 dark:border-zinc-800/80">
+        <div className="h-3 w-24 animate-pulse rounded bg-zinc-200 dark:bg-zinc-800" />
+        <div className="h-7 w-2/3 animate-pulse rounded bg-zinc-200 dark:bg-zinc-800" />
+        <div className="h-4 w-1/2 animate-pulse rounded bg-zinc-200 dark:bg-zinc-800" />
+      </div>
+      <section className="flex min-h-128 flex-col gap-3 rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-950/40">
+        <div className="mr-auto h-20 w-2/3 animate-pulse rounded-lg bg-zinc-100 dark:bg-zinc-900/60" />
+        <div className="ml-auto h-16 w-1/2 animate-pulse rounded-lg bg-emerald-100 dark:bg-emerald-900/40" />
+        <div className="mr-auto h-24 w-3/4 animate-pulse rounded-lg bg-zinc-100 dark:bg-zinc-900/60" />
+      </section>
+    </div>
+  );
+}
+
+function TypingIndicator() {
+  return (
+    <div
+      className="mr-auto flex max-w-[min(100%,52rem)] items-center gap-1.5 rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/60"
+      role="status"
+      aria-live="polite"
+      aria-label="Assistant is typing"
+    >
+      <span className="h-2 w-2 animate-pulse rounded-full bg-zinc-400 [animation-delay:-0.3s] dark:bg-zinc-500" />
+      <span className="h-2 w-2 animate-pulse rounded-full bg-zinc-400 [animation-delay:-0.15s] dark:bg-zinc-500" />
+      <span className="h-2 w-2 animate-pulse rounded-full bg-zinc-400 dark:bg-zinc-500" />
+    </div>
+  );
+}
+
 function findLatestRubric(messages: StoredMessage[]): Rubric | null {
   for (let i = messages.length - 1; i >= 0; i--) {
     const m = messages[i];
@@ -86,8 +124,12 @@ export function SessionWorkspace({ sessionId }: { sessionId: string }) {
   const bootstrapStartedRef = useRef(false);
   const pendingActionRef = useRef<null | "send" | "bootstrap">(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const composerFocusedOnce = useRef(false);
+  const [atBottom, setAtBottom] = useState(true);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const lastMessageCountRef = useRef(0);
 
   const prompt: PracticePrompt | null = useMemo(
     () => (session ? (getPromptById(session.promptId) ?? null) : null),
@@ -107,10 +149,41 @@ export function SessionWorkspace({ sessionId }: { sessionId: string }) {
   }, [sessionId]);
 
   useEffect(() => {
-    if (session?.messages?.length) {
-      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    const target = bottomRef.current;
+    const root = scrollContainerRef.current;
+    if (!target || !root) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const visible = entry?.isIntersecting ?? false;
+        setAtBottom(visible);
+        if (visible) setUnreadCount(0);
+      },
+      { root, threshold: 0.01, rootMargin: "0px 0px 48px 0px" },
+    );
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const count = session?.messages?.length ?? 0;
+    if (count === 0) {
+      lastMessageCountRef.current = 0;
+      return;
     }
-  }, [session?.messages?.length]);
+    const previous = lastMessageCountRef.current;
+    lastMessageCountRef.current = count;
+    if (count <= previous) return;
+    if (atBottom) {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    } else {
+      setUnreadCount((c) => c + (count - previous));
+    }
+  }, [session?.messages?.length, atBottom]);
+
+  const scrollToBottom = useCallback(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    setUnreadCount(0);
+  }, []);
 
   useEffect(() => {
     if (session && !sessionComplete && !composerFocusedOnce.current) {
@@ -300,19 +373,11 @@ export function SessionWorkspace({ sessionId }: { sessionId: string }) {
   }
 
   if (session === undefined) {
-    return (
-      <div className="text-sm text-zinc-500 dark:text-zinc-400">
-        Loading session…
-      </div>
-    );
+    return <SessionSkeleton />;
   }
 
   if (session === null) {
-    return (
-      <div className="rounded-md border border-red-300 bg-red-50 p-4 text-red-900 dark:border-red-800 dark:bg-red-950/40 dark:text-red-100">
-        Session not found in this browser.
-      </div>
-    );
+    return <Banner tone="error">Session not found in this browser.</Banner>;
   }
 
   const trackLabel = prompt ? CATEGORY_LABEL[prompt.category] : "Session";
@@ -342,24 +407,25 @@ export function SessionWorkspace({ sessionId }: { sessionId: string }) {
           )}
         </div>
         <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
+          <Button
+            variant="secondary"
             onClick={downloadExport}
-            className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm font-medium text-zinc-900 shadow-sm hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:hover:bg-zinc-800"
+            iconLeft={<Download className="h-4 w-4" aria-hidden />}
           >
             Export Markdown
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            variant="danger"
             onClick={handleDelete}
-            className="rounded-md border border-red-300 bg-white px-3 py-2 text-sm font-medium text-red-800 hover:bg-red-50 dark:border-red-900 dark:bg-red-950/30 dark:text-red-200 dark:hover:bg-red-950/50"
+            iconLeft={<Trash2 className="h-4 w-4" aria-hidden />}
           >
             Delete session
-          </button>
+          </Button>
           <Link
             href="/"
-            className="rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white"
+            className="inline-flex items-center justify-center gap-2 rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white"
           >
+            <ArrowLeft className="h-4 w-4" aria-hidden />
             Library
           </Link>
         </div>
@@ -378,16 +444,28 @@ export function SessionWorkspace({ sessionId }: { sessionId: string }) {
             messages when you switch language.
           </p>
         </div>
-        <div className="flex max-h-[min(70vh,720px)] flex-1 flex-col gap-3 overflow-y-auto px-4 py-4">
+        <div
+          ref={scrollContainerRef}
+          className="relative flex max-h-[min(70dvh,720px)] flex-1 flex-col gap-3 overflow-y-auto px-4 py-4"
+        >
           {messages.map((m) => (
             <ChatMessage key={m.id} role={m.role as "user" | "assistant"}>
               {m.content}
             </ChatMessage>
           ))}
-          {sending && messages.length === 0 && (
-            <p className="text-sm text-zinc-500">Starting interview…</p>
-          )}
+          {sending && <TypingIndicator />}
           <div ref={bottomRef} />
+          {!atBottom && unreadCount > 0 && (
+            <button
+              type="button"
+              onClick={scrollToBottom}
+              className="sticky bottom-2 mx-auto inline-flex items-center gap-1.5 self-center rounded-full bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white shadow-md transition-colors hover:bg-emerald-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]"
+              aria-label={`${unreadCount} new messages — scroll to bottom`}
+            >
+              <ArrowDown className="h-3 w-3" aria-hidden />
+              {unreadCount} new{unreadCount > 1 ? " messages" : " message"}
+            </button>
+          )}
         </div>
         {chatError && (
           <div className="border-t border-red-200 bg-red-50 px-4 py-2 text-sm text-red-800 dark:border-red-900 dark:bg-red-950/50 dark:text-red-100">
@@ -410,14 +488,17 @@ export function SessionWorkspace({ sessionId }: { sessionId: string }) {
               }
               className="min-h-20 flex-1 resize-y rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 shadow-inner outline-none focus:border-emerald-600 disabled:cursor-not-allowed disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50"
             />
-            <button
-              type="button"
+            <Button
               onClick={() => void send()}
+              loading={sending}
               disabled={sending || sessionComplete || !input.trim()}
-              className="self-end rounded-md bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-50"
+              iconLeft={
+                sending ? undefined : <Send className="h-4 w-4" aria-hidden />
+              }
+              className="self-end"
             >
               {sending ? "Sending…" : "Send"}
-            </button>
+            </Button>
           </div>
           <p className="mt-2 text-[11px] leading-snug text-zinc-500 dark:text-zinc-400">
             <span className="hidden sm:inline">

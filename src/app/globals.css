@@ -1,8 +1,34 @@
 @import "tailwindcss";
+@import "highlight.js/styles/github.css" screen and (prefers-color-scheme: light);
+@import "highlight.js/styles/github-dark.css" screen and (prefers-color-scheme: dark);
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  --color-surface: #ffffff;
+  --color-surface-raised: #fafafa;
+  --color-surface-sunken: #f4f4f5;
+
+  --color-border: #e4e4e7;
+  --color-border-strong: #d4d4d8;
+
+  --color-text-primary: #18181b;
+  --color-text-secondary: #3f3f46;
+  --color-text-muted: #71717a;
+
+  --color-accent: #059669;
+  --color-accent-hover: #10b981;
+  --color-accent-fg: #ffffff;
+
+  --color-danger: #dc2626;
+  --color-danger-hover: #ef4444;
+  --color-danger-fg: #ffffff;
+
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
 }
 
 @theme inline {
@@ -16,6 +42,17 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+
+    --color-surface: #09090b;
+    --color-surface-raised: #18181b;
+    --color-surface-sunken: #000000;
+
+    --color-border: #27272a;
+    --color-border-strong: #3f3f46;
+
+    --color-text-primary: #fafafa;
+    --color-text-secondary: #d4d4d8;
+    --color-text-muted: #a1a1aa;
   }
 }
 
@@ -23,4 +60,9 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
 }

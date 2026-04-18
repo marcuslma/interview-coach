@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Card } from "@/components/ui";
 import type { PracticeCategory } from "@/lib/prompts/types";
 import { CATEGORY_LABEL } from "@/lib/prompts/types";
 import { getPromptById } from "@/lib/prompts";
@@ -58,7 +59,11 @@ export function RecentSessions() {
       <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
         Recent sessions
       </h2>
-      <ul className="mt-3 divide-y divide-zinc-200 rounded-xl border border-zinc-200 bg-white dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-950/40">
+      <Card
+        as="ul"
+        elevation="flat"
+        className="mt-3 divide-y divide-zinc-200 dark:divide-zinc-800"
+      >
         {rows.map((s) => (
           <li
             key={s.id}
@@ -66,7 +71,7 @@ export function RecentSessions() {
           >
             <Link
               href={`/session/${s.id}`}
-              className="flex min-w-0 flex-1 items-center justify-between gap-3 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-900/60 sm:py-0"
+              className="flex min-w-0 flex-1 items-center justify-between gap-3 py-2 text-sm transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900/60 sm:py-0"
             >
               <span className="min-w-0 truncate font-medium text-zinc-900 dark:text-zinc-50">
                 {s.title}
@@ -81,14 +86,14 @@ export function RecentSessions() {
             <button
               type="button"
               onClick={() => remove(s.id)}
-              className="shrink-0 rounded-md px-2 py-1.5 text-xs font-medium text-red-700 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-950/40"
+              className="shrink-0 rounded-md px-2 py-1.5 text-xs font-medium text-red-700 transition-colors hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:text-red-300 dark:hover:bg-red-950/40"
               aria-label={`Delete session ${s.title}`}
             >
               Delete
             </button>
           </li>
         ))}
-      </ul>
+      </Card>
     </section>
   );
 }

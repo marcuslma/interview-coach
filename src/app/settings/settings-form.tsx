@@ -1,6 +1,15 @@
 "use client";
 
 import { useMemo, useState, type FormEvent } from "react";
+import { toast } from "sonner";
+import {
+  Banner,
+  Button,
+  Field,
+  FieldError,
+  FieldWarning,
+  inputClass,
+} from "@/components/ui";
 import {
   DEFAULT_MODEL_BY_PROVIDER,
   type LlmProviderId,
@@ -127,9 +136,7 @@ function EmptyState() {
           onChange={(e) => setPassphrase(e.target.value)}
         />
         {passphraseTooShort && (
-          <p className="mt-1 text-xs text-amber-700 dark:text-amber-400">
-            Minimum 8 characters.
-          </p>
+          <FieldWarning>Minimum 8 characters.</FieldWarning>
         )}
       </Field>
 
@@ -143,21 +150,15 @@ function EmptyState() {
           onChange={(e) => setConfirmPassphrase(e.target.value)}
         />
         {passphraseMismatch && (
-          <p className="mt-1 text-xs text-red-600 dark:text-red-400">
-            Passphrases do not match.
-          </p>
+          <FieldError>Passphrases do not match.</FieldError>
         )}
       </Field>
 
-      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+      {error && <FieldError>{error}</FieldError>}
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="rounded-md bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-60"
-      >
+      <Button type="submit" loading={loading} disabled={loading}>
         {loading ? "Encrypting…" : "Encrypt and save"}
-      </button>
+      </Button>
     </form>
   );
 }
@@ -206,17 +207,15 @@ function LockedState() {
             onChange={(e) => setPassphrase(e.target.value)}
           />
         </Field>
-        {error && (
-          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-        )}
+        {error && <FieldError>{error}</FieldError>}
         <div className="flex flex-wrap items-center gap-3">
-          <button
+          <Button
             type="submit"
+            loading={loading}
             disabled={loading || passphrase.length === 0}
-            className="rounded-md bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-60"
           >
             {loading ? "Unlocking…" : "Unlock"}
-          </button>
+          </Button>
           <button
             type="button"
             onClick={() => setShowReset((v) => !v)}
@@ -234,8 +233,10 @@ function LockedState() {
 
 function ResetPanel({ onCancel }: { onCancel: () => void }) {
   const vault = useVault();
+  const [confirmation, setConfirmation] = useState("");
+  const canReset = confirmation.trim() === "DELETE";
   return (
-    <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-100">
+    <Banner tone="warning">
       <p className="font-semibold">Reset forgotten passphrase</p>
       <p className="mt-2">
         Your passphrase is never transmitted anywhere, so we cannot recover it.
@@ -243,33 +244,44 @@ function ResetPanel({ onCancel }: { onCancel: () => void }) {
         history is preserved. After resetting, you will paste a new API key and
         set a new passphrase.
       </p>
+      <div className="mt-3">
+        <Field
+          label={
+            <>
+              Type <code className="rounded bg-amber-100 px-1 font-mono text-[12px] dark:bg-amber-900/50">DELETE</code> to confirm
+            </>
+          }
+          htmlFor="reset-confirmation"
+        >
+          <input
+            id="reset-confirmation"
+            type="text"
+            autoComplete="off"
+            autoCapitalize="characters"
+            value={confirmation}
+            onChange={(e) => setConfirmation(e.target.value)}
+            className={inputClass}
+          />
+        </Field>
+      </div>
       <div className="mt-3 flex flex-wrap gap-2">
-        <button
-          type="button"
+        <Button
+          variant="dangerSolid"
+          size="sm"
+          disabled={!canReset}
           onClick={() => {
-            if (
-              !globalThis.confirm(
-                "Wipe the encrypted API key from this browser? Chat history stays.",
-              )
-            ) {
-              return;
-            }
             vault.reset();
+            setConfirmation("");
             onCancel();
           }}
-          className="rounded-md bg-red-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-500"
         >
           Reset and re-onboard
-        </button>
-        <button
-          type="button"
-          onClick={onCancel}
-          className="rounded-md border border-amber-400 px-3 py-1.5 text-xs font-medium text-amber-900 hover:bg-amber-100 dark:border-amber-700 dark:text-amber-100 dark:hover:bg-amber-900/40"
-        >
+        </Button>
+        <Button variant="secondary" size="sm" onClick={onCancel}>
           Cancel
-        </button>
+        </Button>
       </div>
-    </div>
+    </Banner>
   );
 }
 
@@ -281,7 +293,6 @@ function UnlockedState() {
   const [model, setModel] = useState(
     vault.model || DEFAULT_MODEL_BY_PROVIDER[vault.provider],
   );
-  const [saved, setSaved] = useState(false);
 
   const nonSecretDirty = useMemo(
     () =>
@@ -293,8 +304,7 @@ function UnlockedState() {
 
   function saveNonSecret() {
     vault.updateNonSecret({ provider, model: model.trim() });
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    toast.success("Settings saved");
   }
 
   return (
@@ -320,19 +330,9 @@ function UnlockedState() {
           onModelChange={setModel}
         />
         <div className="flex flex-wrap gap-3">
-          <button
-            type="button"
-            onClick={saveNonSecret}
-            disabled={!nonSecretDirty}
-            className="rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
-          >
+          <Button onClick={saveNonSecret} disabled={!nonSecretDirty}>
             Save
-          </button>
-          {saved && (
-            <span className="self-center text-xs text-emerald-700 dark:text-emerald-400">
-              Saved.
-            </span>
-          )}
+          </Button>
         </div>
       </section>
 
@@ -347,8 +347,8 @@ function UnlockedState() {
           Danger zone
         </h2>
         <div className="flex flex-wrap gap-3">
-          <button
-            type="button"
+          <Button
+            variant="secondary"
             onClick={() => {
               if (
                 !globalThis.confirm(
@@ -359,12 +359,11 @@ function UnlockedState() {
               }
               vault.lock();
             }}
-            className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-800 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-100 dark:hover:bg-zinc-800"
           >
             Lock vault
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            variant="danger"
             onClick={() => {
               if (
                 !globalThis.confirm(
@@ -375,12 +374,11 @@ function UnlockedState() {
               }
               vault.reset();
             }}
-            className="rounded-md border border-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-950/40"
           >
             Remove API key
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            variant="danger"
             onClick={() => {
               if (
                 !globalThis.confirm(
@@ -391,10 +389,9 @@ function UnlockedState() {
               }
               clearSessions();
             }}
-            className="rounded-md border border-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-950/40"
           >
             Delete all sessions
-          </button>
+          </Button>
         </div>
       </section>
     </div>
@@ -406,13 +403,11 @@ function ChangePassphrasePanel() {
   const [next, setNext] = useState("");
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(false);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
-    setSaved(false);
     if (next.length < 8) {
       setError("Passphrase must be at least 8 characters.");
       return;
@@ -429,8 +424,7 @@ function ChangePassphrasePanel() {
       } else {
         setNext("");
         setConfirm("");
-        setSaved(true);
-        setTimeout(() => setSaved(false), 2000);
+        toast.success("Passphrase updated");
       }
     } finally {
       setLoading(false);
@@ -463,55 +457,18 @@ function ChangePassphrasePanel() {
             onChange={(e) => setConfirm(e.target.value)}
           />
         </Field>
-        {error && (
-          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-        )}
+        {error && <FieldError>{error}</FieldError>}
         <div className="flex flex-wrap items-center gap-3">
-          <button
+          <Button
             type="submit"
+            loading={loading}
             disabled={loading || next.length === 0}
-            className="rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-60"
           >
             {loading ? "Re-encrypting…" : "Update passphrase"}
-          </button>
-          {saved && (
-            <span className="text-xs text-emerald-700 dark:text-emerald-400">
-              Updated.
-            </span>
-          )}
+          </Button>
         </div>
       </form>
     </section>
-  );
-}
-
-/* ---------------------------- Shared pieces ---------------------------- */
-
-const inputClass =
-  "mt-1 w-full max-w-md rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm outline-none focus:border-emerald-600 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100";
-
-function Field({
-  label,
-  htmlFor,
-  hint,
-  children,
-}: {
-  label: string;
-  htmlFor: string;
-  hint?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div>
-      <label
-        htmlFor={htmlFor}
-        className="block text-xs font-medium text-zinc-700 dark:text-zinc-300"
-      >
-        {label}
-      </label>
-      {children}
-      {hint && <p className="mt-1 text-xs text-zinc-500">{hint}</p>}
-    </div>
   );
 }
 
@@ -557,24 +514,6 @@ function ProviderAndModelFields({
           placeholder={DEFAULT_MODEL_BY_PROVIDER[provider]}
         />
       </Field>
-    </div>
-  );
-}
-
-function Banner({
-  tone,
-  children,
-}: {
-  tone: "info" | "success";
-  children: React.ReactNode;
-}) {
-  const toneClass =
-    tone === "success"
-      ? "border-emerald-300 bg-emerald-50 text-emerald-900 dark:border-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-100"
-      : "border-zinc-300 bg-zinc-50 text-zinc-800 dark:border-zinc-800 dark:bg-zinc-950/40 dark:text-zinc-200";
-  return (
-    <div className={`rounded-lg border px-4 py-3 text-sm ${toneClass}`}>
-      {children}
     </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Button, FieldError } from "@/components/ui";
 import { getPromptById } from "@/lib/prompts";
 import { createSession } from "@/lib/storage/client-store";
 
@@ -33,17 +34,10 @@ export function StartSessionButton({ promptId }: { promptId: string }) {
 
   return (
     <div className="flex flex-col gap-1">
-      <button
-        type="button"
-        onClick={onClick}
-        disabled={loading}
-        className="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-60"
-      >
+      <Button onClick={onClick} loading={loading} disabled={loading}>
         {loading ? "Starting…" : "Start session"}
-      </button>
-      {error && (
-        <p className="text-xs text-red-600 dark:text-red-400">{error}</p>
-      )}
+      </Button>
+      {error && <FieldError>{error}</FieldError>}
     </div>
   );
 }

@@ -8,8 +8,10 @@
  * - Controlled dialog: shown on demand (e.g. when sending a chat message
  *   while vault.status !== "unlocked").
  */
+import { Check } from "lucide-react";
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
+import { Button, Field, FieldError, inputClass } from "@/components/ui";
 import { useVault } from "./vault-context";
 
 export function UnlockDialog({
@@ -25,6 +27,7 @@ export function UnlockDialog({
   const [passphrase, setPassphrase] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [succeeded, setSucceeded] = useState(false);
 
   if (!open) return null;
 
@@ -39,8 +42,12 @@ export function UnlockDialog({
         return;
       }
       setPassphrase("");
-      onUnlocked?.();
-      onClose();
+      setSucceeded(true);
+      setTimeout(() => {
+        setSucceeded(false);
+        onUnlocked?.();
+        onClose();
+      }, 600);
     } finally {
       setLoading(false);
     }
@@ -55,53 +62,66 @@ export function UnlockDialog({
     >
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-md rounded-xl bg-neutral-900 p-6 shadow-xl"
+        className="relative w-full max-w-md rounded-xl border border-zinc-200 bg-white p-6 shadow-xl dark:border-zinc-800 dark:bg-zinc-950"
       >
-        <h2 id="unlock-title" className="text-lg font-semibold">
+        {succeeded && (
+          <div
+            className="absolute inset-0 flex items-center justify-center rounded-xl bg-white/90 dark:bg-zinc-950/90"
+            aria-live="polite"
+          >
+            <span className="inline-flex h-14 w-14 animate-[pulse_0.6s_ease-out] items-center justify-center rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+              <Check className="h-7 w-7" aria-hidden />
+            </span>
+          </div>
+        )}
+        <h2
+          id="unlock-title"
+          className="text-lg font-semibold text-zinc-900 dark:text-zinc-50"
+        >
           Unlock API key
         </h2>
-        <p className="mt-1 text-sm text-neutral-400">
+        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
           Enter your passphrase to decrypt the API key stored in this browser.
           The passphrase never leaves your device.
         </p>
-        <label className="mt-4 block text-sm">
-          <span className="text-neutral-300">Passphrase</span>
-          <input
-            type="password"
-            autoFocus
-            value={passphrase}
-            onChange={(e) => setPassphrase(e.target.value)}
-            className="mt-1 w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-          />
-        </label>
+        <div className="mt-4">
+          <Field label="Passphrase" htmlFor="unlock-dialog-passphrase">
+            <input
+              id="unlock-dialog-passphrase"
+              type="password"
+              autoFocus
+              autoComplete="current-password"
+              value={passphrase}
+              onChange={(e) => setPassphrase(e.target.value)}
+              className={inputClass}
+            />
+          </Field>
+        </div>
         {error ? (
-          <p className="mt-2 text-sm text-red-400" role="alert">
-            {error}
-          </p>
+          <div role="alert">
+            <FieldError>{error}</FieldError>
+          </div>
         ) : null}
-        <div className="mt-4 flex items-center justify-between">
+        <div className="mt-4 flex items-center justify-between gap-3">
           <Link
             href="/settings"
-            className="text-xs text-neutral-400 underline hover:text-neutral-200"
+            className="text-xs text-zinc-500 underline hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
             onClick={onClose}
           >
             Forgot passphrase?
           </Link>
           <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="rounded-md border border-neutral-700 px-3 py-1.5 text-sm text-neutral-200 hover:bg-neutral-800"
-            >
+            <Button variant="secondary" size="sm" onClick={onClose}>
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
+              size="sm"
+              loading={loading}
               disabled={loading || passphrase.length === 0}
-              className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50"
             >
               {loading ? "Unlocking…" : "Unlock"}
-            </button>
+            </Button>
           </div>
         </div>
       </form>

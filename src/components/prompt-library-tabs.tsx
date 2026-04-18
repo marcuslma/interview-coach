@@ -8,6 +8,7 @@ import {
   useMemo,
 } from "react";
 import { StartSessionButton } from "@/components/start-session-button";
+import { Card } from "@/components/ui";
 import {
   categoryFromTrackParam,
   DEFAULT_TRACK_SLUG,
@@ -131,8 +132,9 @@ function PromptCard({
   accent: PromptTrackConfig["accent"];
 }) {
   return (
-    <article
-      className={`flex flex-col rounded-xl border-2 bg-white p-4 shadow-sm dark:bg-zinc-950/40 ${cardAccentClass(accent)}`}
+    <Card
+      as="article"
+      className={`flex flex-col border-2 p-4 transition-shadow duration-150 hover:shadow-md ${cardAccentClass(accent)}`}
     >
       <h3 className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
         {prompt.title}
@@ -153,7 +155,7 @@ function PromptCard({
       <div className="mt-4">
         <StartSessionButton promptId={prompt.id} />
       </div>
-    </article>
+    </Card>
   );
 }
 

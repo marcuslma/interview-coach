@@ -1,7 +1,11 @@
+import { Settings as SettingsIcon } from "lucide-react";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
+import { Toaster } from "sonner";
+import { CommandPalette } from "@/components/command-palette";
 import { HeaderVaultStatus } from "@/components/header-vault-status";
+import { ShortcutOverlay } from "@/components/shortcut-overlay";
 import { VaultProvider } from "@/lib/settings/vault-context";
 import "./globals.css";
 
@@ -31,7 +35,7 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="flex min-h-[100svh] flex-col">
         <VaultProvider>
           <header className="border-b border-zinc-200 bg-white/80 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/80">
             <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
@@ -45,8 +49,9 @@ export default function RootLayout({
                 <HeaderVaultStatus />
                 <Link
                   href="/settings"
-                  className="text-xs font-medium text-emerald-700 hover:underline dark:text-emerald-400"
+                  className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium text-emerald-700 transition-colors hover:bg-emerald-50 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] dark:text-emerald-400 dark:hover:bg-emerald-900/30"
                 >
+                  <SettingsIcon className="h-3.5 w-3.5" aria-hidden />
                   Settings
                 </Link>
                 <span
@@ -59,6 +64,14 @@ export default function RootLayout({
             </div>
           </header>
           {children}
+          <CommandPalette />
+          <ShortcutOverlay />
+          <Toaster
+            position="bottom-right"
+            theme="system"
+            closeButton
+            richColors
+          />
         </VaultProvider>
       </body>
     </html>
