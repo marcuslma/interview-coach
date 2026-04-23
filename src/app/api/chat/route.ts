@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { type HistoryMsg, runInterviewTurn } from "@/lib/llm/interviewer";
-import { resolveLocaleHint } from "@/lib/locale";
+import { resolveConversationLocale, resolveLocaleHint } from "@/lib/locale";
 import { getPromptById } from "@/lib/prompts";
 
 /**
@@ -122,11 +122,12 @@ export async function POST(req: Request) {
     role: m.role,
     content: m.content,
   }));
+  const responseLocale = resolveConversationLocale(localeHint, conversation);
 
   try {
     const turn = await runInterviewTurn(practice, conversation, {
       bootstrap,
-      localeHint,
+      localeHint: responseLocale,
       providerId: provider,
       model,
       apiKey,

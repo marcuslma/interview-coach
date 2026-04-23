@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   describeLocaleForPrompt,
   parseAcceptLanguage,
+  resolveConversationLocale,
   resolveLocaleHint,
 } from "./locale";
 
@@ -30,5 +31,34 @@ describe("describeLocaleForPrompt", () => {
   it("returns a non-empty label", () => {
     expect(describeLocaleForPrompt("en").length).toBeGreaterThan(0);
     expect(describeLocaleForPrompt("pt-BR").length).toBeGreaterThan(0);
+  });
+});
+
+describe("resolveConversationLocale", () => {
+  it("prefers latest user language when Portuguese is detected", () => {
+    const resolved = resolveConversationLocale("en", [
+      { role: "assistant", content: "Let's continue." },
+      { role: "user", content: "Pode explicar melhor essa parte sobre closures?" },
+    ]);
+    expect(resolved).toBe("pt-BR");
+  });
+
+  it("prefers latest user language when English is detected", () => {
+    const resolved = resolveConversationLocale("pt-BR", [
+      { role: "assistant", content: "Claro, vamos continuar." },
+      {
+        role: "user",
+        content: "Can you give me one more example with promises and async await?",
+      },
+    ]);
+    expect(resolved).toBe("en");
+  });
+
+  it("falls back to hint when language detection is ambiguous", () => {
+    const resolved = resolveConversationLocale("pt-BR", [
+      { role: "assistant", content: "..." },
+      { role: "user", content: "ok" },
+    ]);
+    expect(resolved).toBe("pt-BR");
   });
 });

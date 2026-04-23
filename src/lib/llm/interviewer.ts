@@ -270,6 +270,14 @@ export type InterviewTurnOptions = {
   apiKey: string;
 };
 
+function latestUserMessage(history: HistoryMsg[]): string | null {
+  for (let i = history.length - 1; i >= 0; i -= 1) {
+    const msg = history[i];
+    if (msg.role === "user") return msg.content;
+  }
+  return null;
+}
+
 function buildDesignContext(prompt: PracticePrompt): string {
   return [
     `Design problem title: ${prompt.title}`,
@@ -306,6 +314,7 @@ export async function runInterviewTurn(
     : buildCodeContext(prompt);
 
   const localeHint = options?.localeHint?.trim() || "en";
+  const lastUserText = latestUserMessage(history);
 
   const messages: InterviewChatMessage[] = [
     { role: "system", content: systemPrompt },
@@ -315,6 +324,15 @@ export async function runInterviewTurn(
     },
     { role: "system", content: buildLanguageInstruction(localeHint) },
   ];
+
+  if (lastUserText) {
+    messages.push({
+      role: "system",
+      content:
+        "Strict language lock for this turn: infer the natural language from the candidate's latest message and write this response in that same language for all prose fields.\n\n" +
+        `Latest candidate message:\n"""${lastUserText}"""`,
+    });
+  }
 
   for (const m of history) {
     messages.push({ role: m.role, content: m.content });

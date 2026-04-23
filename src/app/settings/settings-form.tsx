@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, type FormEvent } from "react";
+import { KeyRound, Lock, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import {
   Banner,
@@ -19,9 +20,41 @@ import { useVault } from "@/lib/settings/vault-context";
 
 const PROVIDER_OPTIONS: { value: LlmProviderId; label: string }[] = [
   { value: "openai", label: "OpenAI" },
-  { value: "anthropic", label: "Anthropic" },
+  { value: "anthropic", label: "Claude (Anthropic)" },
   { value: "google", label: "Google Gemini" },
 ];
+
+const MODEL_OPTIONS_BY_PROVIDER: Record<
+  LlmProviderId,
+  { value: string; label: string }[]
+> = {
+  openai: [
+    { value: "gpt-4o-mini", label: "GPT-4o mini" },
+    { value: "gpt-4.1-mini", label: "GPT-4.1 mini" },
+    { value: "gpt-4.1", label: "GPT-4.1" },
+  ],
+  anthropic: [
+    { value: "claude-sonnet-4-20250514", label: "Claude Sonnet 4" },
+    { value: "claude-opus-4-20250514", label: "Claude Opus 4" },
+    { value: "claude-3-5-haiku-20241022", label: "Claude 3.5 Haiku" },
+  ],
+  google: [
+    { value: "gemini-2.0-flash", label: "Gemini 2.0 Flash" },
+    { value: "gemini-1.5-pro", label: "Gemini 1.5 Pro" },
+    { value: "gemini-1.5-flash", label: "Gemini 1.5 Flash" },
+  ],
+};
+
+function getDefaultModelForProvider(provider: LlmProviderId): string {
+  return MODEL_OPTIONS_BY_PROVIDER[provider][0]?.value;
+}
+
+function getValidModelForProvider(provider: LlmProviderId, model: string): string {
+  const hasModel = MODEL_OPTIONS_BY_PROVIDER[provider].some(
+    (option) => option.value === model,
+  );
+  return hasModel ? model : getDefaultModelForProvider(provider);
+}
 
 export function SettingsForm() {
   const vault = useVault();
@@ -42,8 +75,8 @@ export function SettingsForm() {
 function EmptyState() {
   const vault = useVault();
   const [provider, setProvider] = useState<LlmProviderId>(vault.provider);
-  const [model, setModel] = useState(
-    vault.model || DEFAULT_MODEL_BY_PROVIDER[vault.provider],
+  const [model, setModel] = useState(() =>
+    getValidModelForProvider(vault.provider, vault.model),
   );
   const [apiKey, setApiKey] = useState("");
   const [passphrase, setPassphrase] = useState("");
@@ -75,7 +108,7 @@ function EmptyState() {
       await vault.setup({
         apiKey: apiKey.trim(),
         provider,
-        model: model.trim(),
+        model,
         passphrase,
       });
     } catch (err) {
@@ -97,9 +130,7 @@ function EmptyState() {
         model={model}
         onProviderChange={(p) => {
           setProvider(p);
-          if (!model || model === DEFAULT_MODEL_BY_PROVIDER[provider]) {
-            setModel(DEFAULT_MODEL_BY_PROVIDER[p]);
-          }
+          setModel(getDefaultModelForProvider(p));
         }}
         onModelChange={setModel}
       />
@@ -290,20 +321,19 @@ function ResetPanel({ onCancel }: { onCancel: () => void }) {
 function UnlockedState() {
   const vault = useVault();
   const [provider, setProvider] = useState<LlmProviderId>(vault.provider);
-  const [model, setModel] = useState(
-    vault.model || DEFAULT_MODEL_BY_PROVIDER[vault.provider],
+  const [model, setModel] = useState(() =>
+    getValidModelForProvider(vault.provider, vault.model),
   );
 
   const nonSecretDirty = useMemo(
     () =>
       provider !== vault.provider ||
-      (model.trim() || DEFAULT_MODEL_BY_PROVIDER[provider]) !==
-        (vault.model || DEFAULT_MODEL_BY_PROVIDER[vault.provider]),
+      model !== getValidModelForProvider(vault.provider, vault.model),
     [provider, model, vault.provider, vault.model],
   );
 
   function saveNonSecret() {
-    vault.updateNonSecret({ provider, model: model.trim() });
+    vault.updateNonSecret({ provider, model });
     toast.success("Settings saved");
   }
 
@@ -323,9 +353,7 @@ function UnlockedState() {
           model={model}
           onProviderChange={(p) => {
             setProvider(p);
-            if (!model || model === DEFAULT_MODEL_BY_PROVIDER[provider]) {
-              setModel(DEFAULT_MODEL_BY_PROVIDER[p]);
-            }
+            setModel(getDefaultModelForProvider(p));
           }}
           onModelChange={setModel}
         />
@@ -349,6 +377,7 @@ function UnlockedState() {
         <div className="flex flex-wrap gap-3">
           <Button
             variant="secondary"
+            iconLeft={<Lock className="h-4 w-4" aria-hidden />}
             onClick={() => {
               if (
                 !globalThis.confirm(
@@ -364,6 +393,7 @@ function UnlockedState() {
           </Button>
           <Button
             variant="danger"
+            iconLeft={<KeyRound className="h-4 w-4" aria-hidden />}
             onClick={() => {
               if (
                 !globalThis.confirm(
@@ -379,6 +409,7 @@ function UnlockedState() {
           </Button>
           <Button
             variant="danger"
+            iconLeft={<Trash2 className="h-4 w-4" aria-hidden />}
             onClick={() => {
               if (
                 !globalThis.confirm(
@@ -500,19 +531,22 @@ function ProviderAndModelFields({
         </select>
       </Field>
       <Field
-        label="Model id"
-        htmlFor="model-input"
-        hint={`Leave blank to use ${DEFAULT_MODEL_BY_PROVIDER[provider]}`}
+        label="Model"
+        htmlFor="model-select"
+        hint={`Default suggested: ${DEFAULT_MODEL_BY_PROVIDER[provider]}`}
       >
-        <input
-          id="model-input"
-          type="text"
-          autoComplete="off"
-          className={`${inputClass} font-mono`}
+        <select
+          id="model-select"
+          className={inputClass}
           value={model}
           onChange={(e) => onModelChange(e.target.value)}
-          placeholder={DEFAULT_MODEL_BY_PROVIDER[provider]}
-        />
+        >
+          {MODEL_OPTIONS_BY_PROVIDER[provider].map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
       </Field>
     </div>
   );
