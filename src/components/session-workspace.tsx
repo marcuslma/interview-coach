@@ -121,7 +121,6 @@ export function SessionWorkspace({ sessionId }: { sessionId: string }) {
   const [sending, setSending] = useState(false);
   const [chatError, setChatError] = useState<string | null>(null);
   const [unlockOpen, setUnlockOpen] = useState(false);
-  const bootstrapStartedRef = useRef(false);
   const pendingActionRef = useRef<null | "send" | "bootstrap">(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
@@ -236,6 +235,7 @@ export function SessionWorkspace({ sessionId }: { sessionId: string }) {
 
   const runBootstrap = useCallback(async () => {
     if (!session) return;
+    if (session.messages.length > 0 || sending) return;
     setSending(true);
     setChatError(null);
     try {
@@ -256,26 +256,23 @@ export function SessionWorkspace({ sessionId }: { sessionId: string }) {
     } finally {
       setSending(false);
     }
-  }, [callChatApi, session, sessionId]);
+  }, [callChatApi, sending, session, sessionId]);
 
-  // Auto-bootstrap once for a newly created session with zero messages.
-  useEffect(() => {
-    if (!session) return;
-    if (session.messages.length > 0) return;
-    if (bootstrapStartedRef.current) return;
-    bootstrapStartedRef.current = true;
-    if (!ensureUnlocked("bootstrap")) {
-      // Allow re-triggering after cancel → unlock via header.
-      bootstrapStartedRef.current = false;
+  async function startInterview() {
+    if (!session || sending || sessionComplete || session.messages.length > 0) {
       return;
     }
+    if (!ensureUnlocked("bootstrap")) return;
     void runBootstrap();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session, vault.status]);
+  }
 
   async function send() {
     const text = input.trim();
     if (!text || sending || sessionComplete || !session) return;
+    if (session.messages.length === 0) {
+      setChatError("Click Start interview before sending your first answer.");
+      return;
+    }
     if (!ensureUnlocked("send")) return;
 
     setSending(true);
@@ -381,19 +378,25 @@ export function SessionWorkspace({ sessionId }: { sessionId: string }) {
   }
 
   const trackLabel = prompt ? CATEGORY_LABEL[prompt.category] : "Session";
+  const normalizedTrackLabel = trackLabel.trim().toLowerCase();
+  const shouldShowLanguageBadge = Boolean(
+    prompt?.primaryLanguage &&
+      prompt.primaryLanguage.trim().toLowerCase() !== normalizedTrackLabel,
+  );
   const messages = session.messages.filter(
     (m) => m.role === "user" || m.role === "assistant",
   );
+  const hasMessages = messages.length > 0;
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="sticky top-0 z-10 flex flex-wrap items-start justify-between gap-4 border-b border-zinc-200/80 bg-zinc-50/95 pb-4 backdrop-blur-sm dark:border-zinc-800/80 dark:bg-zinc-950/95">
+      <header className="sticky top-0 z-10 flex flex-col gap-4 border-b border-zinc-200/80 bg-zinc-50/95 pb-4 backdrop-blur-sm dark:border-zinc-800/80 dark:bg-zinc-950/95">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
             {trackLabel}
-            {prompt?.primaryLanguage && (
+            {shouldShowLanguageBadge && (
               <span className="ml-2 rounded-full bg-zinc-200 px-2 py-0.5 font-mono text-[10px] font-normal text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200">
-                {prompt.primaryLanguage}
+                {prompt?.primaryLanguage}
               </span>
             )}
           </p>
@@ -401,12 +404,19 @@ export function SessionWorkspace({ sessionId }: { sessionId: string }) {
             {session.title}
           </h1>
           {prompt && (
-            <p className="mt-2 max-w-3xl text-sm text-zinc-600 dark:text-zinc-300">
+            <p className="mt-2 w-full text-sm text-zinc-600 dark:text-zinc-300">
               {prompt.candidateBrief}
             </p>
           )}
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex w-full flex-wrap items-center justify-start gap-2">
+          <Link
+            href="/"
+            className="inline-flex items-center justify-center gap-2 rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white"
+          >
+            <ArrowLeft className="h-4 w-4" aria-hidden />
+            Library
+          </Link>
           <Button
             variant="secondary"
             onClick={downloadExport}
@@ -421,13 +431,6 @@ export function SessionWorkspace({ sessionId }: { sessionId: string }) {
           >
             Delete session
           </Button>
-          <Link
-            href="/"
-            className="inline-flex items-center justify-center gap-2 rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white"
-          >
-            <ArrowLeft className="h-4 w-4" aria-hidden />
-            Library
-          </Link>
         </div>
       </header>
 
@@ -448,6 +451,16 @@ export function SessionWorkspace({ sessionId }: { sessionId: string }) {
           ref={scrollContainerRef}
           className="relative flex max-h-[min(70dvh,720px)] flex-1 flex-col gap-3 overflow-y-auto px-4 py-4"
         >
+          {!hasMessages && !sending && (
+            <div className="mx-auto my-8 flex w-full max-w-xl flex-col items-center gap-3 rounded-lg border border-zinc-200 bg-zinc-50 p-4 text-center dark:border-zinc-800 dark:bg-zinc-900/40">
+              <p className="text-sm text-zinc-600 dark:text-zinc-300">
+                Session ready. Start the interview when you are ready.
+              </p>
+              <Button onClick={() => void startInterview()} disabled={sending}>
+                Start interview
+              </Button>
+            </div>
+          )}
           {messages.map((m) => (
             <ChatMessage key={m.id} role={m.role as "user" | "assistant"}>
               {m.content}
@@ -459,7 +472,7 @@ export function SessionWorkspace({ sessionId }: { sessionId: string }) {
             <button
               type="button"
               onClick={scrollToBottom}
-              className="sticky bottom-2 mx-auto inline-flex items-center gap-1.5 self-center rounded-full bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white shadow-md transition-colors hover:bg-emerald-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]"
+              className="sticky bottom-2 mx-auto inline-flex items-center gap-1.5 self-center rounded-full bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white shadow-md transition-colors hover:bg-emerald-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               aria-label={`${unreadCount} new messages — scroll to bottom`}
             >
               <ArrowDown className="h-3 w-3" aria-hidden />
@@ -480,18 +493,20 @@ export function SessionWorkspace({ sessionId }: { sessionId: string }) {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleComposerKeyDown}
               rows={3}
-              disabled={sending || sessionComplete}
+              disabled={sending || sessionComplete || !hasMessages}
               placeholder={
                 sessionComplete
                   ? "Session complete — review the rubric or export."
-                  : "Type your answer…"
+                  : hasMessages
+                    ? "Type your answer…"
+                    : "Click Start interview to begin."
               }
               className="min-h-20 flex-1 resize-y rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 shadow-inner outline-none focus:border-emerald-600 disabled:cursor-not-allowed disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50"
             />
             <Button
               onClick={() => void send()}
               loading={sending}
-              disabled={sending || sessionComplete || !input.trim()}
+              disabled={sending || sessionComplete || !hasMessages || !input.trim()}
               iconLeft={
                 sending ? undefined : <Send className="h-4 w-4" aria-hidden />
               }
